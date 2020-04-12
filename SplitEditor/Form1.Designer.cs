@@ -44,8 +44,9 @@
 			this.largSplit3 = new System.Windows.Forms.NumericUpDown();
 			this.largSplit4 = new System.Windows.Forms.NumericUpDown();
 			this.largSplit5 = new System.Windows.Forms.NumericUpDown();
-			this.chkActif = new System.Windows.Forms.CheckBox();
 			this.grpSplit = new System.Windows.Forms.GroupBox();
+			this.modeCpc = new System.Windows.Forms.NumericUpDown();
+			this.chkChangeMode = new System.Windows.Forms.CheckBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
@@ -58,11 +59,13 @@
 			this.lblColor2 = new System.Windows.Forms.Label();
 			this.lblColor1 = new System.Windows.Forms.Label();
 			this.lblColor0 = new System.Windows.Forms.Label();
-			this.rbMode = new System.Windows.Forms.RadioButton();
-			this.rbCouleur = new System.Windows.Forms.RadioButton();
-			this.numPenMode = new System.Windows.Forms.NumericUpDown();
+			this.numPen = new System.Windows.Forms.NumericUpDown();
 			this.bpLoad = new System.Windows.Forms.Button();
 			this.bpSave = new System.Windows.Forms.Button();
+			this.label14 = new System.Windows.Forms.Label();
+			this.retard = new System.Windows.Forms.NumericUpDown();
+			this.bpApplique = new System.Windows.Forms.Button();
+			this.label15 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -72,12 +75,14 @@
 			((System.ComponentModel.ISupportInitialize)(this.largSplit4)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit5)).BeginInit();
 			this.grpSplit.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numPenMode)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.modeCpc)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numPen)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.retard)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pictureBox
 			// 
-			this.pictureBox.Location = new System.Drawing.Point(468, 133);
+			this.pictureBox.Location = new System.Drawing.Point(356, 9);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(768, 544);
 			this.pictureBox.TabIndex = 0;
@@ -88,7 +93,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(16, 22);
+			this.label1.Location = new System.Drawing.Point(22, 53);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(33, 13);
 			this.label1.TabIndex = 1;
@@ -96,7 +101,7 @@
 			// 
 			// numLigne
 			// 
-			this.numLigne.Location = new System.Drawing.Point(66, 22);
+			this.numLigne.Location = new System.Drawing.Point(60, 50);
 			this.numLigne.Maximum = new decimal(new int[] {
             272,
             0,
@@ -120,7 +125,7 @@
 			// chkSplit0
 			// 
 			this.chkSplit0.AutoSize = true;
-			this.chkSplit0.Location = new System.Drawing.Point(18, 26);
+			this.chkSplit0.Location = new System.Drawing.Point(18, 24);
 			this.chkSplit0.Name = "chkSplit0";
 			this.chkSplit0.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit0.TabIndex = 3;
@@ -131,7 +136,7 @@
 			// chkSplit1
 			// 
 			this.chkSplit1.AutoSize = true;
-			this.chkSplit1.Location = new System.Drawing.Point(18, 105);
+			this.chkSplit1.Location = new System.Drawing.Point(18, 103);
 			this.chkSplit1.Name = "chkSplit1";
 			this.chkSplit1.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit1.TabIndex = 3;
@@ -142,7 +147,7 @@
 			// chkSplit2
 			// 
 			this.chkSplit2.AutoSize = true;
-			this.chkSplit2.Location = new System.Drawing.Point(18, 184);
+			this.chkSplit2.Location = new System.Drawing.Point(18, 182);
 			this.chkSplit2.Name = "chkSplit2";
 			this.chkSplit2.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit2.TabIndex = 3;
@@ -153,7 +158,7 @@
 			// chkSplit3
 			// 
 			this.chkSplit3.AutoSize = true;
-			this.chkSplit3.Location = new System.Drawing.Point(18, 263);
+			this.chkSplit3.Location = new System.Drawing.Point(18, 261);
 			this.chkSplit3.Name = "chkSplit3";
 			this.chkSplit3.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit3.TabIndex = 3;
@@ -164,7 +169,7 @@
 			// chkSplit4
 			// 
 			this.chkSplit4.AutoSize = true;
-			this.chkSplit4.Location = new System.Drawing.Point(18, 342);
+			this.chkSplit4.Location = new System.Drawing.Point(18, 340);
 			this.chkSplit4.Name = "chkSplit4";
 			this.chkSplit4.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit4.TabIndex = 3;
@@ -175,7 +180,7 @@
 			// chkSplit5
 			// 
 			this.chkSplit5.AutoSize = true;
-			this.chkSplit5.Location = new System.Drawing.Point(18, 421);
+			this.chkSplit5.Location = new System.Drawing.Point(18, 419);
 			this.chkSplit5.Name = "chkSplit5";
 			this.chkSplit5.Size = new System.Drawing.Size(55, 17);
 			this.chkSplit5.TabIndex = 3;
@@ -405,19 +410,10 @@
             0});
 			this.largSplit5.ValueChanged += new System.EventHandler(this.largSplit6_ValueChanged);
 			// 
-			// chkActif
-			// 
-			this.chkActif.AutoSize = true;
-			this.chkActif.Location = new System.Drawing.Point(123, 23);
-			this.chkActif.Name = "chkActif";
-			this.chkActif.Size = new System.Drawing.Size(69, 17);
-			this.chkActif.TabIndex = 5;
-			this.chkActif.Text = "Split actif";
-			this.chkActif.UseVisualStyleBackColor = true;
-			this.chkActif.CheckedChanged += new System.EventHandler(this.chkActif_CheckedChanged);
-			// 
 			// grpSplit
 			// 
+			this.grpSplit.Controls.Add(this.modeCpc);
+			this.grpSplit.Controls.Add(this.chkChangeMode);
 			this.grpSplit.Controls.Add(this.label8);
 			this.grpSplit.Controls.Add(this.label9);
 			this.grpSplit.Controls.Add(this.label10);
@@ -448,12 +444,36 @@
 			this.grpSplit.Controls.Add(this.largSplit2);
 			this.grpSplit.Controls.Add(this.largSplit1);
 			this.grpSplit.Controls.Add(this.largSplit0);
-			this.grpSplit.Location = new System.Drawing.Point(4, 59);
+			this.grpSplit.Location = new System.Drawing.Point(12, 112);
 			this.grpSplit.Name = "grpSplit";
-			this.grpSplit.Size = new System.Drawing.Size(414, 463);
+			this.grpSplit.Size = new System.Drawing.Size(329, 529);
 			this.grpSplit.TabIndex = 6;
 			this.grpSplit.TabStop = false;
 			this.grpSplit.Text = "Splits";
+			// 
+			// modeCpc
+			// 
+			this.modeCpc.Location = new System.Drawing.Point(256, 485);
+			this.modeCpc.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			this.modeCpc.Name = "modeCpc";
+			this.modeCpc.Size = new System.Drawing.Size(53, 20);
+			this.modeCpc.TabIndex = 13;
+			this.modeCpc.ValueChanged += new System.EventHandler(this.modeCpc_ValueChanged);
+			// 
+			// chkChangeMode
+			// 
+			this.chkChangeMode.AutoSize = true;
+			this.chkChangeMode.Location = new System.Drawing.Point(18, 485);
+			this.chkChangeMode.Name = "chkChangeMode";
+			this.chkChangeMode.Size = new System.Drawing.Size(198, 17);
+			this.chkChangeMode.TabIndex = 12;
+			this.chkChangeMode.Text = "Changement de mode ligne suivante";
+			this.chkChangeMode.UseVisualStyleBackColor = true;
+			this.chkChangeMode.CheckedChanged += new System.EventHandler(this.chkChangeMode_CheckedChanged);
 			// 
 			// label8
 			// 
@@ -512,7 +532,7 @@
 			// lblColor5
 			// 
 			this.lblColor5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor5.Location = new System.Drawing.Point(279, 416);
+			this.lblColor5.Location = new System.Drawing.Point(279, 404);
 			this.lblColor5.Name = "lblColor5";
 			this.lblColor5.Size = new System.Drawing.Size(35, 35);
 			this.lblColor5.TabIndex = 5;
@@ -521,7 +541,7 @@
 			// lblColor4
 			// 
 			this.lblColor4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor4.Location = new System.Drawing.Point(279, 336);
+			this.lblColor4.Location = new System.Drawing.Point(279, 326);
 			this.lblColor4.Name = "lblColor4";
 			this.lblColor4.Size = new System.Drawing.Size(35, 35);
 			this.lblColor4.TabIndex = 5;
@@ -530,7 +550,7 @@
 			// lblColor3
 			// 
 			this.lblColor3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor3.Location = new System.Drawing.Point(279, 256);
+			this.lblColor3.Location = new System.Drawing.Point(279, 248);
 			this.lblColor3.Name = "lblColor3";
 			this.lblColor3.Size = new System.Drawing.Size(35, 35);
 			this.lblColor3.TabIndex = 5;
@@ -539,7 +559,7 @@
 			// lblColor2
 			// 
 			this.lblColor2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor2.Location = new System.Drawing.Point(279, 176);
+			this.lblColor2.Location = new System.Drawing.Point(279, 170);
 			this.lblColor2.Name = "lblColor2";
 			this.lblColor2.Size = new System.Drawing.Size(35, 35);
 			this.lblColor2.TabIndex = 5;
@@ -548,7 +568,7 @@
 			// lblColor1
 			// 
 			this.lblColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor1.Location = new System.Drawing.Point(279, 96);
+			this.lblColor1.Location = new System.Drawing.Point(279, 92);
 			this.lblColor1.Name = "lblColor1";
 			this.lblColor1.Size = new System.Drawing.Size(35, 35);
 			this.lblColor1.TabIndex = 5;
@@ -557,51 +577,28 @@
 			// lblColor0
 			// 
 			this.lblColor0.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblColor0.Location = new System.Drawing.Point(279, 16);
+			this.lblColor0.Location = new System.Drawing.Point(279, 14);
 			this.lblColor0.Name = "lblColor0";
 			this.lblColor0.Size = new System.Drawing.Size(35, 35);
 			this.lblColor0.TabIndex = 5;
 			this.lblColor0.Click += new System.EventHandler(this.lblColor1_Click);
 			// 
-			// rbMode
+			// numPen
 			// 
-			this.rbMode.AutoSize = true;
-			this.rbMode.Location = new System.Drawing.Point(204, 34);
-			this.rbMode.Name = "rbMode";
-			this.rbMode.Size = new System.Drawing.Size(129, 17);
-			this.rbMode.TabIndex = 7;
-			this.rbMode.TabStop = true;
-			this.rbMode.Text = "Changement de mode";
-			this.rbMode.UseVisualStyleBackColor = true;
-			// 
-			// rbCouleur
-			// 
-			this.rbCouleur.AutoSize = true;
-			this.rbCouleur.Location = new System.Drawing.Point(204, 12);
-			this.rbCouleur.Name = "rbCouleur";
-			this.rbCouleur.Size = new System.Drawing.Size(126, 17);
-			this.rbCouleur.TabIndex = 7;
-			this.rbCouleur.TabStop = true;
-			this.rbCouleur.Text = "Changement de Stylo";
-			this.rbCouleur.UseVisualStyleBackColor = true;
-			this.rbCouleur.CheckedChanged += new System.EventHandler(this.rbCouleur_CheckedChanged);
-			// 
-			// numPenMode
-			// 
-			this.numPenMode.Location = new System.Drawing.Point(358, 20);
-			this.numPenMode.Maximum = new decimal(new int[] {
+			this.numPen.Location = new System.Drawing.Point(270, 50);
+			this.numPen.Maximum = new decimal(new int[] {
             15,
             0,
             0,
             0});
-			this.numPenMode.Name = "numPenMode";
-			this.numPenMode.Size = new System.Drawing.Size(51, 20);
-			this.numPenMode.TabIndex = 2;
-			this.numPenMode.ValueChanged += new System.EventHandler(this.numPenMode_ValueChanged);
+			this.numPen.Name = "numPen";
+			this.numPen.Size = new System.Drawing.Size(51, 20);
+			this.numPen.TabIndex = 2;
+			this.numPen.ValueChanged += new System.EventHandler(this.numPenMode_ValueChanged);
 			// 
 			// bpLoad
 			// 
-			this.bpLoad.Location = new System.Drawing.Point(468, 9);
+			this.bpLoad.Location = new System.Drawing.Point(12, 9);
 			this.bpLoad.Name = "bpLoad";
 			this.bpLoad.Size = new System.Drawing.Size(82, 23);
 			this.bpLoad.TabIndex = 8;
@@ -611,7 +608,7 @@
 			// 
 			// bpSave
 			// 
-			this.bpSave.Location = new System.Drawing.Point(561, 9);
+			this.bpSave.Location = new System.Drawing.Point(110, 9);
 			this.bpSave.Name = "bpSave";
 			this.bpSave.Size = new System.Drawing.Size(82, 23);
 			this.bpSave.TabIndex = 8;
@@ -619,21 +616,78 @@
 			this.bpSave.UseVisualStyleBackColor = true;
 			this.bpSave.Click += new System.EventHandler(this.bpSave_Click);
 			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(15, 88);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(39, 13);
+			this.label14.TabIndex = 9;
+			this.label14.Text = "Retard";
+			// 
+			// retard
+			// 
+			this.retard.Increment = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+			this.retard.Location = new System.Drawing.Point(60, 86);
+			this.retard.Maximum = new decimal(new int[] {
+            36,
+            0,
+            0,
+            0});
+			this.retard.Minimum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+			this.retard.Name = "retard";
+			this.retard.Size = new System.Drawing.Size(51, 20);
+			this.retard.TabIndex = 2;
+			this.retard.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+			this.retard.ValueChanged += new System.EventHandler(this.retard_ValueChanged);
+			// 
+			// bpApplique
+			// 
+			this.bpApplique.Location = new System.Drawing.Point(224, 9);
+			this.bpApplique.Name = "bpApplique";
+			this.bpApplique.Size = new System.Drawing.Size(102, 23);
+			this.bpApplique.TabIndex = 10;
+			this.bpApplique.Text = "Appliquer Splits";
+			this.bpApplique.UseVisualStyleBackColor = true;
+			this.bpApplique.Click += new System.EventHandler(this.bpApplique_Click);
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(130, 53);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(134, 13);
+			this.label15.TabIndex = 11;
+			this.label15.Text = "Numéro de stylo à changer";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1238, 689);
+			this.ClientSize = new System.Drawing.Size(1129, 681);
+			this.Controls.Add(this.label15);
+			this.Controls.Add(this.bpApplique);
+			this.Controls.Add(this.label14);
 			this.Controls.Add(this.bpSave);
 			this.Controls.Add(this.bpLoad);
-			this.Controls.Add(this.rbCouleur);
-			this.Controls.Add(this.rbMode);
 			this.Controls.Add(this.grpSplit);
-			this.Controls.Add(this.chkActif);
-			this.Controls.Add(this.numPenMode);
+			this.Controls.Add(this.numPen);
 			this.Controls.Add(this.numLigne);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.retard);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -649,7 +703,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.largSplit5)).EndInit();
 			this.grpSplit.ResumeLayout(false);
 			this.grpSplit.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numPenMode)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.modeCpc)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numPen)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.retard)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -677,7 +733,6 @@
 		private System.Windows.Forms.NumericUpDown largSplit3;
 		private System.Windows.Forms.NumericUpDown largSplit4;
 		private System.Windows.Forms.NumericUpDown largSplit5;
-		private System.Windows.Forms.CheckBox chkActif;
 		private System.Windows.Forms.GroupBox grpSplit;
 		private System.Windows.Forms.Label lblColor0;
 		private System.Windows.Forms.Label label8;
@@ -691,11 +746,15 @@
 		private System.Windows.Forms.Label lblColor3;
 		private System.Windows.Forms.Label lblColor2;
 		private System.Windows.Forms.Label lblColor1;
-		private System.Windows.Forms.RadioButton rbMode;
-		private System.Windows.Forms.RadioButton rbCouleur;
-		private System.Windows.Forms.NumericUpDown numPenMode;
+		private System.Windows.Forms.NumericUpDown numPen;
 		private System.Windows.Forms.Button bpLoad;
 		private System.Windows.Forms.Button bpSave;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.NumericUpDown retard;
+		private System.Windows.Forms.Button bpApplique;
+		private System.Windows.Forms.CheckBox chkChangeMode;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.NumericUpDown modeCpc;
 
 	}
 }

@@ -4,7 +4,9 @@ namespace SplitEditor {
 	public class BitmapCpc {
 		public byte[] bmpCpc = new byte[0x10000];
 		private byte[] bufTmp = new byte[0x10000];
-		public int[,] Palette = new int[272, 17];
+		public int[, ,] Palette = new int[96, 272, 17];
+		public int[] tabMode = new int[272];
+
 		public SplitEcran splitEcran = new SplitEcran();
 
 		static private int[] paletteStandardCPC = { 1, 24, 20, 6, 26, 0, 2, 7, 10, 12, 14, 16, 18, 22, 1, 14 };
@@ -62,7 +64,6 @@ namespace SplitEditor {
 			get { return nbLig << 1; }
 			set { nbLig = value >> 1; }
 		}
-		public int modeCPC = 1;
 		public bool cpcPlus = false;
 
 		public int Size {
@@ -75,15 +76,16 @@ namespace SplitEditor {
 		public BitmapCpc(int tx, int ty, int mode) {
 			TailleX = tx;
 			TailleY = ty;
-			modeCPC = mode;
 			for (int y = 0; y < 272; y++) {
+				tabMode[y] = mode;
 				LigneSplit l = new LigneSplit();
 				for (int j = 0; j < 6; j++)
 					l.ListeSplit.Add(new Split());
 
 				splitEcran.LignesSplit.Add(l);
-				for (int i = 0; i < 16; i++)
-					Palette[y, i] = paletteStandardCPC[i]; // ### a reconstruire avec les splits ?
+				for (int x = 0; x < 96; x++)
+					for (int i = 0; i < 16; i++)
+						Palette[x, y, i] = paletteStandardCPC[i]; // ### a reconstruire avec les splits ?
 			}
 		}
 
@@ -91,15 +93,59 @@ namespace SplitEditor {
 			System.Array.Clear(bmpCpc, 0, bmpCpc.Length);
 		}
 
-		public void SetPalette(int ligne, int entree, int valeur) {
-			Palette[ligne, entree] = valeur;
+		public void SetPalette(int x, int y, int entree, int valeur) {
+			Palette[x, y, entree] = valeur;
 		}
 
-		public RvbColor GetPaletteColor(int ligne, int col) {
-			if (cpcPlus)
-				return new RvbColor((byte)(((Palette[ligne, col] & 0xF0) >> 4) * 17), (byte)(((Palette[ligne, col] & 0xF00) >> 8) * 17), (byte)((Palette[ligne, col] & 0x0F) * 17));
+		public void CalcPaletteSplit() {
+			int[] curPal = new int[16];
+			for (int i = 0; i < 16; i++)
+				curPal[i] = Palette[0, 0, i];
 
-			return RgbCPC[Palette[ligne, col] < 27 ? Palette[ligne, col] : 0];
+			// Raz splits
+			for (int y = 0; y < 272; y++)
+				for (int x = 0; x < 96; x++)
+					for (int i = 0; i < 16; i++)
+						Palette[x, y, i] = curPal[i];
+
+			int numCol = 0;
+			for (int y = 0; y < 272; y++) {
+				LigneSplit lSpl = splitEcran.LignesSplit[y];
+				numCol = lSpl.numPen;
+				int x = 0, xpos = lSpl.retard >> 2;
+				// de x à xpos => faire palette = curPal
+				while (x < xpos)
+					Palette[x++, y, numCol] = curPal[numCol];
+
+				for (int ns = 0; ns < 6; ns++) {
+					Split s = lSpl.GetSplit(ns);
+					if (s.enable) {
+						xpos += s.longueur >> 2;
+						curPal[numCol] = s.couleur;
+						if (xpos > 96)
+							xpos = 96;
+
+						// de x à xpos => faire palette = curPal
+						while (x < xpos)
+							Palette[x++, y, numCol] = curPal[numCol];
+					}
+					else
+						break;
+				}
+				// Terminer ligne
+				while (x < 96)
+					Palette[x++, y, numCol] = curPal[numCol];
+
+				if (y < 271 && lSpl.changeMode)
+					tabMode[y + 1] = lSpl.newMode;
+			}
+		}
+
+		public RvbColor GetPaletteColor(int x, int y, int col) {
+			if (cpcPlus)
+				return new RvbColor((byte)(((Palette[x, y, col] & 0xF0) >> 4) * 17), (byte)(((Palette[x, y, col] & 0xF00) >> 8) * 17), (byte)((Palette[x, y, col] & 0x0F) * 17));
+
+			return RgbCPC[Palette[x, y, col] < 27 ? Palette[x, y, col] : 0];
 		}
 
 		private int GetPalCPC(int c) {
@@ -121,7 +167,7 @@ namespace SplitEditor {
 		public void SetPixelCpc(int xPos, int yPos, int col) {
 			GetAdrCpc(yPos);
 			byte octet = bmpCpc[AdrCPC + (xPos >> 3)];
-			switch (modeCPC) {
+			switch (tabMode[yPos >> 1]) {
 				case 0:
 					octet = (byte)((octet & ~tabMasqueMode0[(xPos >> 2) & 1]) | (tabOctetMode01[col & 15] >> ((xPos >> 2) & 1)));
 					break;
@@ -138,11 +184,10 @@ namespace SplitEditor {
 			bmpCpc[AdrCPC + (xPos >> 3)] = octet;
 		}
 
-
 		public int GetPixelCpc(int x, int y) {
 			GetAdrCpc(y);
 			byte octet = bmpCpc[AdrCPC + (x >> 3)];
-			switch (modeCPC) {
+			switch (tabMode[y >> 1]) {
 				case 0:
 					octet = (byte)((octet & tabMasqueMode0[(x >> 2) & 1]) << ((x >> 2) & 1));
 					break;
@@ -156,14 +201,13 @@ namespace SplitEditor {
 					octet = (byte)((octet & tabMasqueMode2[x & 7]) << (x & 7));
 					break;
 			}
-			int Tx = 4 >> (modeCPC == 3 ? 1 : modeCPC);
+			int Tx = 4 >> (tabMode[y >> 1] == 3 ? 1 : tabMode[y >> 1]);
 			for (int i = 0; i < Tx; i++)
 				if (octet == tabOctetMode01[i])
 					return i;
 
 			return 0;
 		}
-
 
 		public LockBitmap Render(LockBitmap bmp, int offsetX, int offsetY, bool getPalMode) {
 			bmp.LockBits();
@@ -174,25 +218,25 @@ namespace SplitEditor {
 				int xBitmap = 0;
 				for (int x = 0; x < nbCol; x++) {
 					byte Octet = bmpCpc[AdrCPC++];
-					switch (modeCPC) {
+					switch (tabMode[y >> 1]) {
 						case 0:
-							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[line / 2, (Octet >> 7) + ((Octet & 0x20) >> 3) + ((Octet & 0x08) >> 2) + ((Octet & 0x02) << 2)]), 4);
-							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[line / 2, ((Octet & 0x40) >> 6) + ((Octet & 0x10) >> 2) + ((Octet & 0x04) >> 1) + ((Octet & 0x01) << 3)]), 4);
+							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, (Octet >> 7) + ((Octet & 0x20) >> 3) + ((Octet & 0x08) >> 2) + ((Octet & 0x02) << 2)]), 4);
+							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[x, line / 2, ((Octet & 0x40) >> 6) + ((Octet & 0x10) >> 2) + ((Octet & 0x04) >> 1) + ((Octet & 0x01) << 3)]), 4);
 							xBitmap += 8;
 							break;
 
 						case 1:
 						case 3:
-							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[line / 2, ((Octet >> 7) & 1) + ((Octet >> 2) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 2, y, GetPalCPC(Palette[line / 2, ((Octet >> 6) & 1) + ((Octet >> 1) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[line / 2, ((Octet >> 5) & 1) + ((Octet >> 0) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 6, y, GetPalCPC(Palette[line / 2, ((Octet >> 4) & 1) + ((Octet << 1) & 2)]), 2);
+							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 7) & 1) + ((Octet >> 2) & 2)]), 2);
+							bmp.SetFullPixel(xBitmap + 2, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 6) & 1) + ((Octet >> 1) & 2)]), 2);
+							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 5) & 1) + ((Octet >> 0) & 2)]), 2);
+							bmp.SetFullPixel(xBitmap + 6, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 4) & 1) + ((Octet << 1) & 2)]), 2);
 							xBitmap += 8;
 							break;
 
 						case 2:
 							for (int i = 8; i-- > 0; ) {
-								bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[line / 2, (Octet >> i) & 1]), 1);
+								bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, (Octet >> i) & 1]), 1);
 								xBitmap++;
 							}
 							break;
@@ -351,10 +395,12 @@ namespace SplitEditor {
 		}
 
 		private void SetPalette(byte[] palStart, int startAdr, bool plus) {
-			modeCPC = palStart[startAdr] & 0x03;
-			for (int y = 0; y < 280; y++)
-				for (int i = 0; i < 16; i++)
-					Palette[y, i] = plus ? palStart[startAdr + 1 + (i << 1)] + (palStart[startAdr + 2 + (i << 1)] << 8) : palStart[startAdr + i + 1];
+			for (int y = 0; y < 272; y++) {
+				tabMode[y] = palStart[startAdr] & 0x03;
+				for (int x = 0; x < 96; x++)
+					for (int i = 0; i < 16; i++)
+						Palette[x, y, i] = plus ? palStart[startAdr + 1 + (i << 1)] + (palStart[startAdr + 2 + (i << 1)] << 8) : palStart[startAdr + i + 1];
+			}
 		}
 	}
 }

@@ -26,9 +26,10 @@ namespace SplitEditor {
 			set { listeSplit = value; }
 		}
 
-		public int coulOrMode = 0;
-		public bool modeCouleur = true;
-		public bool enable = false;
+		public int numPen = 0;
+		public int retard = 4;
+		public bool changeMode = false;
+		public int newMode = 0;
 
 		public LigneSplit() {
 		}

@@ -32,31 +32,25 @@ namespace SplitEditor {
 
 		private void DisplayLigne() {
 			curLigneSplit = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value - 1);
-			chkActif.Checked = grpSplit.Visible = curLigneSplit.enable;
-			rbCouleur.Checked = curLigneSplit.modeCouleur;
-			numPenMode.Value = curLigneSplit.coulOrMode;
-			numPenMode.Maximum = rbCouleur.Checked ? 15 : 2;
-			rbCouleur.Enabled = rbMode.Enabled = numPenMode.Enabled = curLigneSplit.enable;
-			if (curLigneSplit.enable) {
-				lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
-				largSplit0.Value = curLigneSplit.GetSplit(0).longueur;
-				lblColor0.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(0).couleur].GetColorArgb);
-				lblColor1.Visible = largSplit1.Visible = chkSplit1.Checked = curLigneSplit.GetSplit(1).enable;
-				largSplit1.Value = curLigneSplit.GetSplit(1).longueur;
-				lblColor1.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(1).couleur].GetColorArgb);
-				lblColor2.Visible = largSplit2.Visible = chkSplit2.Checked = curLigneSplit.GetSplit(2).enable;
-				largSplit2.Value = curLigneSplit.GetSplit(2).longueur;
-				lblColor2.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(2).couleur].GetColorArgb);
-				lblColor3.Visible = largSplit3.Visible = chkSplit3.Checked = curLigneSplit.GetSplit(3).enable;
-				largSplit3.Value = curLigneSplit.GetSplit(3).longueur;
-				lblColor3.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(3).couleur].GetColorArgb);
-				lblColor4.Visible = largSplit4.Visible = chkSplit4.Checked = curLigneSplit.GetSplit(4).enable;
-				largSplit4.Value = curLigneSplit.GetSplit(4).longueur;
-				lblColor4.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(4).couleur].GetColorArgb);
-				lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
-				largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
-				lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
-			}
+			numPen.Value = curLigneSplit.numPen;
+			lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
+			largSplit0.Value = curLigneSplit.GetSplit(0).longueur;
+			lblColor0.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(0).couleur].GetColorArgb);
+			lblColor1.Visible = largSplit1.Visible = chkSplit1.Checked = curLigneSplit.GetSplit(1).enable;
+			largSplit1.Value = curLigneSplit.GetSplit(1).longueur;
+			lblColor1.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(1).couleur].GetColorArgb);
+			lblColor2.Visible = largSplit2.Visible = chkSplit2.Checked = curLigneSplit.GetSplit(2).enable;
+			largSplit2.Value = curLigneSplit.GetSplit(2).longueur;
+			lblColor2.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(2).couleur].GetColorArgb);
+			lblColor3.Visible = largSplit3.Visible = chkSplit3.Checked = curLigneSplit.GetSplit(3).enable;
+			largSplit3.Value = curLigneSplit.GetSplit(3).longueur;
+			lblColor3.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(3).couleur].GetColorArgb);
+			lblColor4.Visible = largSplit4.Visible = chkSplit4.Checked = curLigneSplit.GetSplit(4).enable;
+			largSplit4.Value = curLigneSplit.GetSplit(4).longueur;
+			lblColor4.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(4).couleur].GetColorArgb);
+			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
+			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
+			lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
 		}
 
 		// Changement de la palette
@@ -76,21 +70,22 @@ namespace SplitEditor {
 		}
 
 		public void Render() {
+			bitmapCpc.CalcPaletteSplit();
 			bitmapCpc.Render(bmpLock, offsetX, offsetY, false);
 			pictureBox.Refresh();
 		}
 
 		#region à voir...
 		private void DrawPen(MouseEventArgs e, bool erase = false) {
-			int Tx = (4 >> (bitmapCpc.modeCPC == 3 ? 1 : bitmapCpc.modeCPC));
-			for (int y = 0; y < penWidth * 2; y += 2)
-				for (int x = 0; x < penWidth * Tx; x += Tx) {
-					int xReel = x + offsetX + e.X - ((penWidth * Tx) >> 1) + 1;
-					int yReel = y + offsetY + e.Y - penWidth + 1;
-					if (xReel >= 0 && yReel > 0 && xReel < bitmapCpc.TailleX && yReel < bitmapCpc.TailleY)
-						bitmapCpc.SetPixelCpc(xReel, yReel, erase ? 0 : numCol);
-				}
-			Render();
+		//	int Tx = (4 >> (bitmapCpc.modeCPC == 3 ? 1 : bitmapCpc.modeCPC));
+		//	for (int y = 0; y < penWidth * 2; y += 2)
+		//		for (int x = 0; x < penWidth * Tx; x += Tx) {
+		//			int xReel = x + offsetX + e.X - ((penWidth * Tx) >> 1) + 1;
+		//			int yReel = y + offsetY + e.Y - penWidth + 1;
+		//			if (xReel >= 0 && yReel > 0 && xReel < bitmapCpc.TailleX && yReel < bitmapCpc.TailleY)
+		//				bitmapCpc.SetPixelCpc(xReel, yReel, erase ? 0 : numCol);
+		//		}
+		//	Render();
 		}
 
 		private void pictureBox_MouseDown(object sender, MouseEventArgs e) {
@@ -102,6 +97,7 @@ namespace SplitEditor {
 			if (e.Button != MouseButtons.None)
 				DrawPen(e, e.Button == MouseButtons.Right);
 		}
+		#endregion
 
 		private void bpSave_Click(object sender, EventArgs e) {
 			SaveFileDialog dlg = new SaveFileDialog();
@@ -142,27 +138,29 @@ namespace SplitEditor {
 				}
 #endif
 				file.Close();
+				Render();
 				DisplayLigne();
 			}
 		}
-		#endregion
 
 		private void numLigne_ValueChanged(object sender, EventArgs e) {
 			DisplayLigne();
 		}
 
-		private void chkActif_CheckedChanged(object sender, EventArgs e) {
-			curLigneSplit.enable = chkActif.Checked;
-			DisplayLigne();
-		}
-
-		private void rbCouleur_CheckedChanged(object sender, EventArgs e) {
-			curLigneSplit.modeCouleur = rbCouleur.Checked;
-			DisplayLigne();
-		}
-
 		private void numPenMode_ValueChanged(object sender, EventArgs e) {
-			curLigneSplit.coulOrMode = (int)numPenMode.Value;
+			curLigneSplit.numPen = (int)numPen.Value;
+		}
+
+		private void retard_ValueChanged(object sender, EventArgs e) {
+			curLigneSplit.retard = (int)retard.Value;
+		}
+
+		private void chkChangeMode_CheckedChanged(object sender, EventArgs e) {
+			curLigneSplit.changeMode = chkChangeMode.Checked;
+		}
+
+		private void modeCpc_ValueChanged(object sender, EventArgs e) {
+			curLigneSplit.newMode = (int)modeCpc.Value;
 		}
 
 		private void ChangeLargeur(int index, NumericUpDown val) {
@@ -259,6 +257,10 @@ namespace SplitEditor {
 
 		private void lblColor6_Click(object sender, EventArgs e) {
 			ChangeColor(5);
+		}
+
+		private void bpApplique_Click(object sender, EventArgs e) {
+			Render();
 		}
 	}
 }
