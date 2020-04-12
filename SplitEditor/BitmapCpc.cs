@@ -5,7 +5,7 @@ namespace SplitEditor {
 		public byte[] bmpCpc = new byte[0x10000];
 		private byte[] bufTmp = new byte[0x10000];
 		public int[,] Palette = new int[272, 17];
-		public LigneSplit[] ligneSplit = new LigneSplit[272];
+		public SplitEcran splitEcran = new SplitEcran();
 
 		static private int[] paletteStandardCPC = { 1, 24, 20, 6, 26, 0, 2, 7, 10, 12, 14, 16, 18, 22, 1, 14 };
 		static private int[] tabMasqueMode0 = { 0xAA, 0x55 };
@@ -76,9 +76,15 @@ namespace SplitEditor {
 			TailleX = tx;
 			TailleY = ty;
 			modeCPC = mode;
-			for (int y = 0; y < 272; y++)
+			for (int y = 0; y < 272; y++) {
+				LigneSplit l = new LigneSplit();
+				for (int j = 0; j < 6; j++)
+					l.ListeSplit.Add(new Split());
+
+				splitEcran.LignesSplit.Add(l);
 				for (int i = 0; i < 16; i++)
 					Palette[y, i] = paletteStandardCPC[i]; // ### a reconstruire avec les splits ?
+			}
 		}
 
 		public void ClearBmp() {
