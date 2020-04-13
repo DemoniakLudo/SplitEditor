@@ -51,6 +51,7 @@ namespace SplitEditor {
 					g.DrawImage(bmpRead, new Rectangle(0, 0, 768, 544));
 					pictureSplit.Image = bmp;
 					bitmapOk = true;
+					ValideSplit();
 				}
 				else
 					MessageBox.Show("L'image doit avoir une dimension de 384 pixels par 272");
@@ -69,8 +70,13 @@ namespace SplitEditor {
 			}
 		}
 
-		private void bpValider_Click(object sender, EventArgs e) {
-			bool err = false;
+		private void AddErr(string err) {
+			listErr.Items.Add(err);
+			listErr.SelectedIndex = listErr.Items.Count - 1;
+		}
+
+		private void ValideSplit() {
+			listErr.Items.Clear();
 			LockBitmap loc = new LockBitmap((Bitmap)pictureSplit.Image);
 			loc.LockBits();
 			int lastLineWrite = 0;
@@ -97,10 +103,12 @@ namespace SplitEditor {
 							curCol = indexChoix;
 							longSplit = 0;
 							if (++numSplit > 6)
-								err = true;
+								AddErr("Plus de 6 splits trouvés sur la ligne " + y + ", seulement 6 seront pris en compte.");
 						}
-						else {
-						}
+						else
+							if (indexChoix != curCol && longSplit > 0)
+								AddErr("Split de longueur inférieure à 32 trouvé sur la ligne " + y + ", la longueur sera ramenée à 32 pixels.");
+
 						longSplit += 4;
 					}
 				}
@@ -124,8 +132,6 @@ namespace SplitEditor {
 				}
 			}
 			loc.UnlockBits();
-			if (!err)
-				Close();
 		}
 	}
 }

@@ -25,9 +25,9 @@
 		private void InitializeComponent() {
 			this.pictureSplit = new System.Windows.Forms.PictureBox();
 			this.bpLire = new System.Windows.Forms.Button();
-			this.bpValider = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.numPen = new System.Windows.Forms.NumericUpDown();
+			this.listErr = new System.Windows.Forms.ListBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureSplit)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numPen)).BeginInit();
 			this.SuspendLayout();
@@ -50,16 +50,6 @@
 			this.bpLire.UseVisualStyleBackColor = true;
 			this.bpLire.Click += new System.EventHandler(this.bpLire_Click);
 			// 
-			// bpValider
-			// 
-			this.bpValider.Location = new System.Drawing.Point(7, 80);
-			this.bpValider.Name = "bpValider";
-			this.bpValider.Size = new System.Drawing.Size(92, 23);
-			this.bpValider.TabIndex = 2;
-			this.bpValider.Text = "Valider image";
-			this.bpValider.UseVisualStyleBackColor = true;
-			this.bpValider.Click += new System.EventHandler(this.bpValider_Click);
-			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
@@ -81,14 +71,22 @@
 			this.numPen.Size = new System.Drawing.Size(45, 20);
 			this.numPen.TabIndex = 4;
 			// 
+			// listErr
+			// 
+			this.listErr.FormattingEnabled = true;
+			this.listErr.Location = new System.Drawing.Point(7, 548);
+			this.listErr.Name = "listErr";
+			this.listErr.Size = new System.Drawing.Size(875, 134);
+			this.listErr.TabIndex = 5;
+			// 
 			// ImportSplit
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(885, 550);
+			this.ClientSize = new System.Drawing.Size(885, 684);
+			this.Controls.Add(this.listErr);
 			this.Controls.Add(this.numPen);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.bpValider);
 			this.Controls.Add(this.bpLire);
 			this.Controls.Add(this.pictureSplit);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -107,8 +105,8 @@
 
 		private System.Windows.Forms.PictureBox pictureSplit;
 		private System.Windows.Forms.Button bpLire;
-		private System.Windows.Forms.Button bpValider;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.NumericUpDown numPen;
+		private System.Windows.Forms.ListBox listErr;
 	}
 }
