@@ -26,12 +26,11 @@ namespace SplitEditor {
 			bmpLock = new LockBitmap(bmp);
 			bitmapCpc = new BitmapCpc(taillex << 1, tailley << 1, mode); // ###
 			Reset();
-			Render();
-			DisplayLigne();
+			DisplayLigne(true);
 		}
 
-		private void DisplayLigne() {
-			curLigneSplit = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value - 1);
+		private void DisplayLigne(bool forceRender) {
+			curLigneSplit = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value);
 			numPen.Value = curLigneSplit.numPen;
 			lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
 			largSplit0.Value = curLigneSplit.GetSplit(0).longueur;
@@ -51,6 +50,8 @@ namespace SplitEditor {
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
 			lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
+			if (chkAutoApplique.Checked || forceRender)
+				Render();
 		}
 
 		// Changement de la palette
@@ -75,29 +76,11 @@ namespace SplitEditor {
 			pictureBox.Refresh();
 		}
 
-		#region à voir...
-		private void DrawPen(MouseEventArgs e, bool erase = false) {
-		//	int Tx = (4 >> (bitmapCpc.modeCPC == 3 ? 1 : bitmapCpc.modeCPC));
-		//	for (int y = 0; y < penWidth * 2; y += 2)
-		//		for (int x = 0; x < penWidth * Tx; x += Tx) {
-		//			int xReel = x + offsetX + e.X - ((penWidth * Tx) >> 1) + 1;
-		//			int yReel = y + offsetY + e.Y - penWidth + 1;
-		//			if (xReel >= 0 && yReel > 0 && xReel < bitmapCpc.TailleX && yReel < bitmapCpc.TailleY)
-		//				bitmapCpc.SetPixelCpc(xReel, yReel, erase ? 0 : numCol);
-		//		}
-		//	Render();
-		}
-
-		private void pictureBox_MouseDown(object sender, MouseEventArgs e) {
-			if (e.Button != MouseButtons.None)
-				DrawPen(e, e.Button == MouseButtons.Right);
-		}
-
 		private void pictureBox_MouseMove(object sender, MouseEventArgs e) {
-			if (e.Button != MouseButtons.None)
-				DrawPen(e, e.Button == MouseButtons.Right);
+			int yReel = (offsetY + e.Y) >> 1;
+			int xReel = (offsetX + e.X) >> 1;
+			lblInfo.Text = "Position X:" + xReel.ToString("000") + ", Y:" + yReel.ToString("000");
 		}
-		#endregion
 
 		private void bpSave_Click(object sender, EventArgs e) {
 			SaveFileDialog dlg = new SaveFileDialog();
@@ -105,19 +88,14 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Create);
-#if TRY_CATCH
 				try {
-#endif
-				new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
-#if TRY_CATCH
+					new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
 				}
 				catch (Exception ex) {
 					MessageBox.Show(ex.StackTrace, ex.Message);
 				}
-#endif
 				file.Close();
 			}
-
 		}
 
 		private void bpLoad_Click(object sender, EventArgs e) {
@@ -126,25 +104,20 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Open);
-#if TRY_CATCH
 				try {
-#endif
-				SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
-				bitmapCpc.splitEcran = spl;
-#if TRY_CATCH
+					SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
+					bitmapCpc.splitEcran = spl;
 				}
 				catch (Exception ex) {
 					MessageBox.Show(ex.StackTrace, ex.Message);
 				}
-#endif
 				file.Close();
-				Render();
-				DisplayLigne();
+				DisplayLigne(true);
 			}
 		}
 
 		private void numLigne_ValueChanged(object sender, EventArgs e) {
-			DisplayLigne();
+			DisplayLigne(false);
 		}
 
 		private void numPenMode_ValueChanged(object sender, EventArgs e) {
@@ -165,7 +138,7 @@ namespace SplitEditor {
 
 		private void ChangeLargeur(int index, NumericUpDown val) {
 			curLigneSplit.GetSplit(index).longueur = ((int)val.Value) & 0xFFC;
-			DisplayLigne();
+			DisplayLigne(false);
 		}
 
 		private void largSplit1_ValueChanged(object sender, EventArgs e) {
@@ -195,7 +168,7 @@ namespace SplitEditor {
 		private void EnableSplit(int index, CheckBox chk, CheckBox prec) {
 			if (prec == null || prec.Checked) {
 				curLigneSplit.GetSplit(index).enable = chk.Checked;
-				DisplayLigne();
+				DisplayLigne(false);
 			}
 			else
 				chk.Checked = false;
@@ -231,7 +204,7 @@ namespace SplitEditor {
 			ed.ShowDialog(this);
 			if (ed.isValide) {
 				curXSplit.couleur = ed.ValColor;
-				DisplayLigne();
+				DisplayLigne(false);
 			}
 		}
 
@@ -261,6 +234,37 @@ namespace SplitEditor {
 
 		private void bpApplique_Click(object sender, EventArgs e) {
 			Render();
+		}
+
+		private void bpImportImage_Click(object sender, EventArgs e) {
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.Filter = "Images cpc (.scr)|*.scr|Tous fichiers|*.*";
+			DialogResult result = dlg.ShowDialog();
+			if (result == DialogResult.OK) {
+				try {
+					if (bitmapCpc.CreateImageFile(dlg.FileName)) 
+						DisplayLigne(true);
+				}
+				catch (Exception ex) {
+					MessageBox.Show(ex.StackTrace, ex.Message);
+				}
+			}
+		}
+
+		private void bpCopieLigne_Click(object sender, EventArgs e) {
+			if ((int)numLigne.Value > 0) {
+				LigneSplit lignePrec = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value - 1);
+				curLigneSplit.numPen = lignePrec.numPen;
+				curLigneSplit.retard = lignePrec.retard;
+				curLigneSplit.changeMode = lignePrec.changeMode;
+				curLigneSplit.newMode = lignePrec.newMode;
+				for (int i = 0; i < 6; i++) {
+					curLigneSplit.ListeSplit[i].enable = lignePrec.ListeSplit[i].enable;
+					curLigneSplit.ListeSplit[i].couleur = lignePrec.ListeSplit[i].couleur;
+					curLigneSplit.ListeSplit[i].longueur = lignePrec.ListeSplit[i].longueur;
+				}
+				DisplayLigne(false);
+			}
 		}
 	}
 }

@@ -66,6 +66,10 @@
 			this.retard = new System.Windows.Forms.NumericUpDown();
 			this.bpApplique = new System.Windows.Forms.Button();
 			this.label15 = new System.Windows.Forms.Label();
+			this.bpImportImage = new System.Windows.Forms.Button();
+			this.lblInfo = new System.Windows.Forms.Label();
+			this.bpCopieLigne = new System.Windows.Forms.Button();
+			this.chkAutoApplique = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -82,12 +86,11 @@
 			// 
 			// pictureBox
 			// 
-			this.pictureBox.Location = new System.Drawing.Point(356, 9);
+			this.pictureBox.Location = new System.Drawing.Point(349, 86);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(768, 544);
 			this.pictureBox.TabIndex = 0;
 			this.pictureBox.TabStop = false;
-			this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
 			this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
 			// 
 			// label1
@@ -103,23 +106,13 @@
 			// 
 			this.numLigne.Location = new System.Drawing.Point(60, 50);
 			this.numLigne.Maximum = new decimal(new int[] {
-            272,
-            0,
-            0,
-            0});
-			this.numLigne.Minimum = new decimal(new int[] {
-            1,
+            271,
             0,
             0,
             0});
 			this.numLigne.Name = "numLigne";
 			this.numLigne.Size = new System.Drawing.Size(51, 20);
 			this.numLigne.TabIndex = 2;
-			this.numLigne.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
 			this.numLigne.ValueChanged += new System.EventHandler(this.numLigne_ValueChanged);
 			// 
 			// chkSplit0
@@ -672,11 +665,54 @@
 			this.label15.TabIndex = 11;
 			this.label15.Text = "Numéro de stylo à changer";
 			// 
+			// bpImportImage
+			// 
+			this.bpImportImage.Location = new System.Drawing.Point(639, 9);
+			this.bpImportImage.Name = "bpImportImage";
+			this.bpImportImage.Size = new System.Drawing.Size(109, 23);
+			this.bpImportImage.TabIndex = 12;
+			this.bpImportImage.Text = "Importer Image";
+			this.bpImportImage.UseVisualStyleBackColor = true;
+			this.bpImportImage.Click += new System.EventHandler(this.bpImportImage_Click);
+			// 
+			// lblInfo
+			// 
+			this.lblInfo.AutoSize = true;
+			this.lblInfo.Location = new System.Drawing.Point(346, 644);
+			this.lblInfo.Name = "lblInfo";
+			this.lblInfo.Size = new System.Drawing.Size(16, 13);
+			this.lblInfo.TabIndex = 13;
+			this.lblInfo.Text = "...";
+			// 
+			// bpCopieLigne
+			// 
+			this.bpCopieLigne.Location = new System.Drawing.Point(349, 48);
+			this.bpCopieLigne.Name = "bpCopieLigne";
+			this.bpCopieLigne.Size = new System.Drawing.Size(132, 23);
+			this.bpCopieLigne.TabIndex = 14;
+			this.bpCopieLigne.Text = "Copier ligne précédente";
+			this.bpCopieLigne.UseVisualStyleBackColor = true;
+			this.bpCopieLigne.Click += new System.EventHandler(this.bpCopieLigne_Click);
+			// 
+			// chkAutoApplique
+			// 
+			this.chkAutoApplique.AutoSize = true;
+			this.chkAutoApplique.Location = new System.Drawing.Point(349, 13);
+			this.chkAutoApplique.Name = "chkAutoApplique";
+			this.chkAutoApplique.Size = new System.Drawing.Size(154, 17);
+			this.chkAutoApplique.TabIndex = 15;
+			this.chkAutoApplique.Text = "Appliquer automatiquement";
+			this.chkAutoApplique.UseVisualStyleBackColor = true;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1129, 681);
+			this.Controls.Add(this.chkAutoApplique);
+			this.Controls.Add(this.bpCopieLigne);
+			this.Controls.Add(this.lblInfo);
+			this.Controls.Add(this.bpImportImage);
 			this.Controls.Add(this.label15);
 			this.Controls.Add(this.bpApplique);
 			this.Controls.Add(this.label14);
@@ -755,6 +791,10 @@
 		private System.Windows.Forms.CheckBox chkChangeMode;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown modeCpc;
+		private System.Windows.Forms.Button bpImportImage;
+		private System.Windows.Forms.Label lblInfo;
+		private System.Windows.Forms.Button bpCopieLigne;
+		private System.Windows.Forms.CheckBox chkAutoApplique;
 
 	}
 }
