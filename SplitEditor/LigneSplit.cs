@@ -27,9 +27,9 @@ namespace SplitEditor {
 		}
 
 		public int numPen = 0;
-		public int retard = 4;
-		public bool changeMode = false;
+		public int retard = 0;
 		public int newMode = 0;
+		public bool changeMode = false;
 
 		public LigneSplit() {
 		}

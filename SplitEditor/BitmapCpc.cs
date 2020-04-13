@@ -22,6 +22,8 @@ namespace SplitEditor {
 		public const int Lum1 = 0x66;
 		public const int Lum2 = 0xFF;
 
+		public const int retardMin = 4; // ### 4;
+
 		static public RvbColor[] RgbCPC = new RvbColor[27] {
 							new RvbColor( Lum0, Lum0, Lum0),
 							new RvbColor( Lum1, Lum0, Lum0),
@@ -83,6 +85,7 @@ namespace SplitEditor {
 			for (int y = 0; y < 272; y++) {
 				tabMode[y] = mode;
 				LigneSplit l = new LigneSplit();
+				l.retard = retardMin;
 				for (int j = 0; j < 6; j++)
 					l.ListeSplit.Add(new Split());
 

@@ -70,6 +70,9 @@
 			this.lblInfo = new System.Windows.Forms.Label();
 			this.bpCopieLigne = new System.Windows.Forms.Button();
 			this.chkAutoApplique = new System.Windows.Forms.CheckBox();
+			this.groupPal = new System.Windows.Forms.GroupBox();
+			this.bpImportSplit = new System.Windows.Forms.Button();
+			this.bpGenAsm = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -86,7 +89,7 @@
 			// 
 			// pictureBox
 			// 
-			this.pictureBox.Location = new System.Drawing.Point(349, 86);
+			this.pictureBox.Location = new System.Drawing.Point(360, 86);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(768, 544);
 			this.pictureBox.TabIndex = 0;
@@ -678,7 +681,7 @@
 			// lblInfo
 			// 
 			this.lblInfo.AutoSize = true;
-			this.lblInfo.Location = new System.Drawing.Point(346, 644);
+			this.lblInfo.Location = new System.Drawing.Point(357, 633);
 			this.lblInfo.Name = "lblInfo";
 			this.lblInfo.Size = new System.Drawing.Size(16, 13);
 			this.lblInfo.TabIndex = 13;
@@ -704,11 +707,43 @@
 			this.chkAutoApplique.Text = "Appliquer automatiquement";
 			this.chkAutoApplique.UseVisualStyleBackColor = true;
 			// 
+			// groupPal
+			// 
+			this.groupPal.Location = new System.Drawing.Point(360, 652);
+			this.groupPal.Name = "groupPal";
+			this.groupPal.Size = new System.Drawing.Size(768, 57);
+			this.groupPal.TabIndex = 16;
+			this.groupPal.TabStop = false;
+			this.groupPal.Text = "Palette initiale";
+			// 
+			// bpImportSplit
+			// 
+			this.bpImportSplit.Location = new System.Drawing.Point(916, 9);
+			this.bpImportSplit.Name = "bpImportSplit";
+			this.bpImportSplit.Size = new System.Drawing.Size(135, 23);
+			this.bpImportSplit.TabIndex = 17;
+			this.bpImportSplit.Text = "Importer image split";
+			this.bpImportSplit.UseVisualStyleBackColor = true;
+			this.bpImportSplit.Click += new System.EventHandler(this.bpImportSplit_Click);
+			// 
+			// bpGenAsm
+			// 
+			this.bpGenAsm.Location = new System.Drawing.Point(12, 686);
+			this.bpGenAsm.Name = "bpGenAsm";
+			this.bpGenAsm.Size = new System.Drawing.Size(121, 23);
+			this.bpGenAsm.TabIndex = 18;
+			this.bpGenAsm.Text = "Générer assembleur";
+			this.bpGenAsm.UseVisualStyleBackColor = true;
+			this.bpGenAsm.Click += new System.EventHandler(this.bpGenAsm_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1129, 681);
+			this.ClientSize = new System.Drawing.Size(1129, 725);
+			this.Controls.Add(this.bpGenAsm);
+			this.Controls.Add(this.bpImportSplit);
+			this.Controls.Add(this.groupPal);
 			this.Controls.Add(this.chkAutoApplique);
 			this.Controls.Add(this.bpCopieLigne);
 			this.Controls.Add(this.lblInfo);
@@ -795,6 +830,9 @@
 		private System.Windows.Forms.Label lblInfo;
 		private System.Windows.Forms.Button bpCopieLigne;
 		private System.Windows.Forms.CheckBox chkAutoApplique;
+		private System.Windows.Forms.GroupBox groupPal;
+		private System.Windows.Forms.Button bpImportSplit;
+		private System.Windows.Forms.Button bpGenAsm;
 
 	}
 }

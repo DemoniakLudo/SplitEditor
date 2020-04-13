@@ -11,11 +11,11 @@ namespace SplitEditor {
 		public BitmapCpc bitmapCpc;
 		private int offsetX = 0, offsetY = 0;
 		private int numCol = 0;
-		private int penWidth = 1;
 		private int mode = 1;
 		private int taillex = 384; // Résolution image horizontale en pixels mode 2
 		private int tailley = 272; // Résolution image verticale en 2*pixels
 		private LigneSplit curLigneSplit;
+		private Label[] colors = new Label[16];
 
 		public Form1() {
 			InitializeComponent();
@@ -25,8 +25,28 @@ namespace SplitEditor {
 			pictureBox.Image = bmp;
 			bmpLock = new LockBitmap(bmp);
 			bitmapCpc = new BitmapCpc(taillex << 1, tailley << 1, mode); // ###
+			retard.Minimum = BitmapCpc.retardMin;
+			retard.Maximum = BitmapCpc.retardMin + 32;
+
+			for (int i = 0; i < 16; i++) {
+				// Générer les contrôles de "couleurs"
+				colors[i] = new Label();
+				colors[i].BorderStyle = BorderStyle.FixedSingle;
+				colors[i].Location = new Point(4 + i * 48, 20);
+				colors[i].Size = new Size(40, 32);
+				colors[i].Tag = i;
+				colors[i].Click += ClickColor;
+				groupPal.Controls.Add(colors[i]);
+			}
 			Reset();
 			DisplayLigne(true);
+		}
+
+		private void UpdatePalette() {
+			for (int i = 0; i < 16; i++) {
+				colors[i].BackColor = Color.FromArgb(bitmapCpc.GetPaletteColor(0, 0, i).GetColorArgb);
+				colors[i].Refresh();
+			}
 		}
 
 		private void DisplayLigne(bool forceRender) {
@@ -50,15 +70,31 @@ namespace SplitEditor {
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
 			lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
-			if (chkAutoApplique.Checked || forceRender)
+			if (chkAutoApplique.Checked || forceRender) {
+				UpdatePalette();
 				Render();
+			}
 		}
 
 		// Changement de la palette
 		private void ClickColor(object sender, System.EventArgs e) {
 			Label colorClick = sender as Label;
 			numCol = colorClick.Tag != null ? (int)colorClick.Tag : 0;
+			EditColor ed = new EditColor(numCol, bitmapCpc.GetPaletteColor(0, 0, numCol).GetColorArgb, false);
+			ed.ShowDialog(this);
+			if (ed.isValide) {
+				bitmapCpc.Palette[0, 0, numCol] = ed.ValColor;
+				colors[numCol].BackColor = Color.FromArgb(bitmapCpc.GetPaletteColor(0, 0, numCol).GetColorArgb);
+				colors[numCol].Refresh();
+				Render();
+			}
 		}
+
+		//// Changement de la palette
+		//private void ClickColor(object sender, System.EventArgs e) {
+		//	Label colorClick = sender as Label;
+		//	numCol = colorClick.Tag != null ? (int)colorClick.Tag : 0;
+		//}
 
 		public void Reset() {
 			int col = System.Drawing.SystemColors.Control.ToArgb();
@@ -88,12 +124,12 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Create);
-				try {
-					new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
-				}
-				catch (Exception ex) {
-					MessageBox.Show(ex.StackTrace, ex.Message);
-				}
+				//try {
+				new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
+				//}
+				//catch (Exception ex) {
+				//	MessageBox.Show(ex.StackTrace, ex.Message);
+				//}
 				file.Close();
 			}
 		}
@@ -104,13 +140,13 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Open);
-				try {
-					SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
-					bitmapCpc.splitEcran = spl;
-				}
-				catch (Exception ex) {
-					MessageBox.Show(ex.StackTrace, ex.Message);
-				}
+				//try {
+				SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
+				bitmapCpc.splitEcran = spl;
+				//}
+				//catch (Exception ex) {
+				//	MessageBox.Show(ex.StackTrace, ex.Message);
+				//}
 				file.Close();
 				DisplayLigne(true);
 			}
@@ -242,7 +278,7 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				try {
-					if (bitmapCpc.CreateImageFile(dlg.FileName)) 
+					if (bitmapCpc.CreateImageFile(dlg.FileName))
 						DisplayLigne(true);
 				}
 				catch (Exception ex) {
@@ -264,6 +300,27 @@ namespace SplitEditor {
 					curLigneSplit.ListeSplit[i].longueur = lignePrec.ListeSplit[i].longueur;
 				}
 				DisplayLigne(false);
+			}
+		}
+
+		private void bpImportSplit_Click(object sender, EventArgs e) {
+			Enabled = false;
+			ImportSplit imp = new ImportSplit(bitmapCpc.splitEcran);
+			imp.ShowDialog();
+			DisplayLigne(true);
+			Enabled = true;
+		}
+
+		private void bpGenAsm_Click(object sender, EventArgs e) {
+			SaveFileDialog dlg = new SaveFileDialog();
+			dlg.Filter = "Fichiers assembleur (*.asm)|*.asm";
+			DialogResult result = dlg.ShowDialog();
+			if (result == DialogResult.OK) {
+				FileStream fs = new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write);
+				StreamWriter sw = new StreamWriter(fs);
+				GenAsm.CreeAsm(sw, bitmapCpc);
+				sw.Close();
+				fs.Close();
 			}
 		}
 	}
