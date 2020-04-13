@@ -73,6 +73,10 @@ namespace SplitEditor {
 			}
 		}
 
+		public BitmapCpc(byte[] source, int offset) {
+			System.Array.Copy(source, offset, bmpCpc, 0, source.Length - offset);
+		}
+
 		public BitmapCpc(int tx, int ty, int mode) {
 			TailleX = tx;
 			TailleY = ty;
@@ -97,6 +101,14 @@ namespace SplitEditor {
 			Palette[x, y, entree] = valeur;
 		}
 
+		private int AppliquePalette(int x, int y, int xpos, int[] curPal) {
+			for (; x < xpos; x++)
+				for (int i = 0; i < 16; i++)
+					Palette[x, y, i] = curPal[i];
+
+			return x;
+		}
+
 		public void CalcPaletteSplit() {
 			int[] curPal = new int[16];
 			for (int i = 0; i < 16; i++)
@@ -112,11 +124,9 @@ namespace SplitEditor {
 			for (int y = 0; y < 272; y++) {
 				LigneSplit lSpl = splitEcran.LignesSplit[y];
 				numCol = lSpl.numPen;
-				int x = 0, xpos = lSpl.retard >> 2;
+				int xpos = lSpl.retard >> 2;
 				// de x à xpos => faire palette = curPal
-				while (x < xpos)
-					Palette[x++, y, numCol] = curPal[numCol];
-
+				int x = AppliquePalette(0, y, xpos, curPal);
 				for (int ns = 0; ns < 6; ns++) {
 					Split s = lSpl.GetSplit(ns);
 					if (s.enable) {
@@ -126,16 +136,13 @@ namespace SplitEditor {
 							xpos = 96;
 
 						// de x à xpos => faire palette = curPal
-						while (x < xpos)
-							Palette[x++, y, numCol] = curPal[numCol];
+						x = AppliquePalette(x, y, xpos, curPal);
 					}
 					else
 						break;
 				}
 				// Terminer ligne
-				while (x < 96)
-					Palette[x++, y, numCol] = curPal[numCol];
-
+				AppliquePalette(x, y, 96, curPal);
 				if (y < 271 && lSpl.changeMode)
 					tabMode[y + 1] = lSpl.newMode;
 			}
