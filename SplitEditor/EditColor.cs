@@ -3,11 +3,10 @@ using System.Windows.Forms;
 
 namespace SplitEditor {
 	public partial class EditColor: Form {
-		private Label[] colors = new Label[27];
+		private Label[] tabColors = new Label[27];
 		private Label lblValColor = new Label();
 		private TextBox[] tabVal = new TextBox[3];
 		private TrackBar[] tabTrack = new TrackBar[3];
-		private Label[] tabLabel = new Label[3];
 		private int valColor;
 		public int ValColor { get { return valColor; } }
 		public bool isValide;
@@ -17,22 +16,22 @@ namespace SplitEditor {
 			selColor.BackColor = Color.FromArgb(rgbColor);
 			if (cpcPlus) {
 				for (int i = 0; i < 3; i++) {
-					tabLabel[i] = new Label();
+					tabColors[i] = new Label();
 					tabVal[i] = new TextBox();
 					tabTrack[i] = new TrackBar();
-					tabLabel[i].Location = new Point(277, 8 + 40 * i);
+					tabColors[i].Location = new Point(277, 8 + 40 * i);
 					tabVal[i].Location = new Point(298, 5 + 40 * i);
 					tabTrack[i].Location = new Point(331, 5 + 40 * i);
-					tabLabel[i].AutoSize = true;
+					tabColors[i].AutoSize = true;
 					tabVal[i].Size = new Size(27, 20);
 					tabTrack[i].Size = new Size(104, 42);
 					tabVal[i].TextChanged += val_TextChanged;
 					tabTrack[i].Scroll += track_Scroll;
 					tabTrack[i].Maximum = 15;
 					tabVal[i].Tag = tabTrack[i].Tag = i;
-					tabLabel[i].Text = "RVB".Substring(i, 1);
+					tabColors[i].Text = "RVB".Substring(i, 1);
 					tabVal[i].Text = (((rgbColor >> (2 - i) * 8) & 0xFF) / 17).ToString();
-					Controls.Add(tabLabel[i]);
+					Controls.Add(tabColors[i]);
 					Controls.Add(tabTrack[i]);
 					Controls.Add(tabVal[i]);
 				}
@@ -42,15 +41,15 @@ namespace SplitEditor {
 				int i = 0;
 				for (int y = 0; y < 3; y++)
 					for (int x = 0; x < 9; x++) {
-						colors[i] = new Label();
-						colors[i].BorderStyle = BorderStyle.FixedSingle;
-						colors[i].Location = new Point(4 + x * 48, 80 + y * 40);
-						colors[i].Size = new Size(40, 32);
-						colors[i].Tag = i;
-						colors[i].BackColor = Color.FromArgb(BitmapCpc.RgbCPC[i].GetColorArgb);
-						colors[i].Click += ClickColor;
-						colors[i].DoubleClick += DblClickColor;
-						Controls.Add(colors[i++]);
+						tabColors[i] = new Label();
+						tabColors[i].BorderStyle = BorderStyle.FixedSingle;
+						tabColors[i].Location = new Point(4 + x * 48, 80 + y * 40);
+						tabColors[i].Size = new Size(40, 32);
+						tabColors[i].Tag = i;
+						tabColors[i].BackColor = Color.FromArgb(BitmapCpc.RgbCPC[i].GetColorArgb);
+						tabColors[i].Click += ClickColor;
+						tabColors[i].DoubleClick += DblClickColor;
+						Controls.Add(tabColors[i++]);
 					}
 				lblValColor.AutoSize = true;
 				lblValColor.Location = new Point(271, 34);

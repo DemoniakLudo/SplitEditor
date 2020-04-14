@@ -124,12 +124,12 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Create);
-				//try {
-				new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
-				//}
-				//catch (Exception ex) {
-				//	MessageBox.Show(ex.StackTrace, ex.Message);
-				//}
+				try {
+					new XmlSerializer(typeof(SplitEcran)).Serialize(file, bitmapCpc.splitEcran);
+				}
+				catch (Exception ex) {
+					MessageBox.Show(ex.StackTrace, ex.Message);
+				}
 				file.Close();
 			}
 		}
@@ -140,13 +140,13 @@ namespace SplitEditor {
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Open);
-				//try {
-				SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
-				bitmapCpc.splitEcran = spl;
-				//}
-				//catch (Exception ex) {
-				//	MessageBox.Show(ex.StackTrace, ex.Message);
-				//}
+				try {
+					SplitEcran spl = (SplitEcran)new XmlSerializer(typeof(SplitEcran)).Deserialize(file);
+					bitmapCpc.splitEcran = spl;
+				}
+				catch (Exception ex) {
+					MessageBox.Show(ex.StackTrace, ex.Message);
+				}
 				file.Close();
 				DisplayLigne(true);
 			}
