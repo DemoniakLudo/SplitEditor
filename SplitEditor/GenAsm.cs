@@ -16,22 +16,33 @@ namespace SplitEditor {
 			wr.WriteLine("\tLD\t(#38),HL");
 			wr.WriteLine("\tEI");
 			wr.WriteLine("\tLD\tHL,Overscan");
-			wr.WriteLine("\tCALL\tSetCrtc");
-			wr.WriteLine("\tLD\tBC,#7F00");
-			wr.WriteLine("\tLD\tHL,Palette");
-			wr.WriteLine("SetColor:");
-			wr.WriteLine("\tOUT\t(C),C");
+			wr.WriteLine("\tLD\tB,#BC");
+			wr.WriteLine("BclCrtc:");
+			wr.WriteLine("\tLD\tA,(HL)");
+			wr.WriteLine("\tAND\tA");
+			wr.WriteLine("\JR\tZ,SetPalette");
+			wr.WriteLine("\tINC\tHL");
+			wr.WriteLine("\tOUT\t(C),A");
+			wr.WriteLine("\tINC\tB");
 			wr.WriteLine("\tINC\tB");
 			wr.WriteLine("\tOUTI");
-			wr.WriteLine("\tINC\tC");
-			wr.WriteLine("\tLD\tA,C");
+			wr.WriteLine("\tDEC\tB");
+			wr.WriteLine("\tJR\tBclCrtc");
+			wr.WriteLine("SetPalette:");
+			wr.WriteLine("\tLD\tB,#7F");
+			wr.WriteLine("\tLD\tHL,Palette");
+			wr.WriteLine("BclPalette:");
+			wr.WriteLine("\tOUT\t(C),A");
+			wr.WriteLine("\tINC\tB");
+			wr.WriteLine("\tOUTI");
+			wr.WriteLine("\tINC\tA");
 			wr.WriteLine("\tCP\t16");
-			wr.WriteLine("\tJR\tNZ,SetColor");
-			wr.WriteLine("waitvbl:");
-			wr.WriteLine("\tLD	B,#F5");
-			wr.WriteLine("\tIN	A,(C)");
+			wr.WriteLine("\tJR\tNZ,BclPalette");
+			wr.WriteLine("WaitVbl:");
+			wr.WriteLine("\tLD\tB,#F5");
+			wr.WriteLine("\tIN\tA,(C)");
 			wr.WriteLine("\tRRA");
-			wr.WriteLine("\tJR	NC,waitvbl");
+			wr.WriteLine("\tJR\tNC,WaitVbl");
 			wr.WriteLine("\tEI");
 			wr.WriteLine("\tHALT");
 			wr.WriteLine("\tHALT");
@@ -41,14 +52,14 @@ namespace SplitEditor {
 			wr.WriteLine("\tHALT");
 			wr.WriteLine("\tHALT");
 			wr.WriteLine("\tDI");
-			wr.WriteLine("\tLD	B,235");
-			wr.WriteLine("wait0");
+			wr.WriteLine("\tLD\tB,235");
+			wr.WriteLine("WaitL0");
 			wr.WriteLine("\tNEG");
 			wr.WriteLine("\tNEG");
-			wr.WriteLine("\tDJNZ\twait0");
+			wr.WriteLine("\tDJNZ\tWaitL0");
 			wr.WriteLine("\tNEG");
 			wr.WriteLine("\tNEG");
-			wr.WriteLine("\tld\tBC,#7F8D");
+			wr.WriteLine("\tLD\tBC,#7F8D");
 			wr.WriteLine("\tOUT\t(C),C");
 			wr.WriteLine("DebImage:");
 		}
@@ -87,20 +98,6 @@ namespace SplitEditor {
 		static private void WriteEndFile(StreamWriter wr, int[, ,] palette) {
 			wr.WriteLine("\tJP DebImage");
 			wr.WriteLine("");
-			wr.WriteLine("SetCrtc:");
-			wr.WriteLine("\tLD\tBC,#BC");
-			wr.WriteLine("Bcl:");
-			wr.WriteLine("\tLD\tA,(HL)");
-			wr.WriteLine("\tAND\tA");
-			wr.WriteLine("\tRET\tZ");
-			wr.WriteLine("\tOUT\t(C),A");
-			wr.WriteLine("\tINC\tB");
-			wr.WriteLine("\tINC\tHL");
-			wr.WriteLine("\tLD\tA,(HL)");
-			wr.WriteLine("\tOUT\t(C),A");
-			wr.WriteLine("\tINC\tHL");
-			wr.WriteLine("\tDEC\tB");
-			wr.WriteLine("\tJR\tBcl");
 			wr.WriteLine("Overscan:");
 			wr.WriteLine("\tDB\t1,48,2,50,3,#8E,6,34,7,35,12,13,13,0,0,0,0");
 			wr.WriteLine("Palette:");
@@ -147,33 +144,43 @@ namespace SplitEditor {
 					tpsLine += lg >> 3;
 					if (lSpl.ListeSplit[1].enable) {
 						wr.WriteLine("\tOUT\t(C),D");
-						lg = lSpl.ListeSplit[1].longueur - 32;
-						GenereRetard(wr, lg);
-						tpsLine += 4 + (lg >> 3);
+						tpsLine += 4;
+						if (lSpl.ListeSplit[2].enable) {
+							lg = lSpl.ListeSplit[1].longueur - 32;
+							GenereRetard(wr, lg);
+							tpsLine += (lg >> 3);
+						}
 					}
 					if (lSpl.ListeSplit[2].enable) {
 						wr.WriteLine("\tOUT\t(C),E");
-						lg = lSpl.ListeSplit[2].longueur - 32;
-						GenereRetard(wr, lg);
-						tpsLine += 4 + (lg >> 3);
+						tpsLine += 4;
+						if (lSpl.ListeSplit[3].enable) {
+							lg = lSpl.ListeSplit[2].longueur - 32;
+							GenereRetard(wr, lg);
+							tpsLine += (lg >> 3);
+						}
 					}
 					if (lSpl.ListeSplit[3].enable) {
 						wr.WriteLine("\tOUT\t(C),H");
-						lg = lSpl.ListeSplit[3].longueur - 32;
-						GenereRetard(wr, lg);
-						tpsLine += 4 + (lg >> 3);
+						tpsLine += 4;
+						if (lSpl.ListeSplit[4].enable) {
+							lg = lSpl.ListeSplit[3].longueur - 32;
+							GenereRetard(wr, lg);
+							tpsLine += (lg >> 3);
+						}
 					}
 					if (lSpl.ListeSplit[4].enable) {
 						wr.WriteLine("\tOUT\t(C),L");
-						lg = lSpl.ListeSplit[4].longueur - 32;
-						GenereRetard(wr, lg);
-						tpsLine += 4 + (lg >> 3);
+						tpsLine += 4;
+						if (lSpl.ListeSplit[5].enable) {
+							lg = lSpl.ListeSplit[4].longueur - 32;
+							GenereRetard(wr, lg);
+							tpsLine += (lg >> 3);
+						}
 					}
 					if (lSpl.ListeSplit[5].enable) {
 						wr.WriteLine("\tOUT\t(C),A");
-						lg = lSpl.ListeSplit[5].longueur - 32;
-						GenereRetard(wr, lg);
-						tpsLine += 4 + (lg >> 3);
+						tpsLine += 4;
 					}
 					reste = 64 - tpsLine;
 				}
