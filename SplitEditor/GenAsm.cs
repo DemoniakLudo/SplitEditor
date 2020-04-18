@@ -20,7 +20,7 @@ namespace SplitEditor {
 			wr.WriteLine("BclCrtc:");
 			wr.WriteLine("\tLD\tA,(HL)");
 			wr.WriteLine("\tAND\tA");
-			wr.WriteLine("\JR\tZ,SetPalette");
+			wr.WriteLine("\tJR\tZ,SetPalette");
 			wr.WriteLine("\tINC\tHL");
 			wr.WriteLine("\tOUT\t(C),A");
 			wr.WriteLine("\tINC\tB");
