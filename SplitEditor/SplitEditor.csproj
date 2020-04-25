@@ -49,11 +49,11 @@
     <Compile Include="EditColor.Designer.cs">
       <DependentUpon>EditColor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="EditSplit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="EditSplit.Designer.cs">
+      <DependentUpon>EditSplit.cs</DependentUpon>
     </Compile>
     <Compile Include="GenAsm.cs" />
     <Compile Include="ImportSplit.cs">
@@ -71,8 +71,8 @@
     <EmbeddedResource Include="EditColor.resx">
       <DependentUpon>EditColor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="EditSplit.resx">
+      <DependentUpon>EditSplit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImportSplit.resx">
       <DependentUpon>ImportSplit.cs</DependentUpon>

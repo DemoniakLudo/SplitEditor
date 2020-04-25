@@ -1,5 +1,5 @@
 ﻿namespace SplitEditor {
-	partial class Form1 {
+	partial class EditSplit {
 		/// <summary>
 		/// Variable nécessaire au concepteur.
 		/// </summary>

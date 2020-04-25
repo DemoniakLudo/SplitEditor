@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace SplitEditor {
-	public partial class Form1 : Form {
+	public partial class EditSplit : Form {
 		private Bitmap bmp;
 		private LockBitmap bmpLock;
 		public BitmapCpc bitmapCpc;
@@ -18,7 +18,7 @@ namespace SplitEditor {
 		private Label[] colors = new Label[16];
 		private bool doRender;
 
-		public Form1() {
+		public EditSplit() {
 			InitializeComponent();
 			int tx = pictureBox.Width;
 			int ty = pictureBox.Height;

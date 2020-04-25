@@ -102,8 +102,10 @@ namespace SplitEditor {
 							lSplit.ListeSplit[numSplit].enable = true;
 							curCol = indexChoix;
 							longSplit = 0;
-							if (++numSplit > 6)
+							if (numSplit++ >= 5) {
 								AddErr("Plus de 6 splits trouvés sur la ligne " + y + ", seulement 6 seront pris en compte.");
+								x = 96;
+							}
 						}
 						else
 							if (indexChoix != curCol && longSplit > 0)
