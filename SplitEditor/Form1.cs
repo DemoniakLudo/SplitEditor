@@ -16,6 +16,7 @@ namespace SplitEditor {
 		private int tailley = 272; // Résolution image verticale en 2*pixels
 		private LigneSplit curLigneSplit;
 		private Label[] colors = new Label[16];
+		private bool doRender;
 
 		public Form1() {
 			InitializeComponent();
@@ -50,6 +51,7 @@ namespace SplitEditor {
 		}
 
 		private void DisplayLigne(bool forceRender) {
+			doRender = false;
 			curLigneSplit = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value);
 			numPen.Value = curLigneSplit.numPen;
 			lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
@@ -70,6 +72,7 @@ namespace SplitEditor {
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
 			lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
+			doRender = true;
 			if (chkAutoApplique.Checked || forceRender) {
 				UpdatePalette();
 				Render();
@@ -107,9 +110,34 @@ namespace SplitEditor {
 		}
 
 		public void Render() {
-			bitmapCpc.CalcPaletteSplit();
-			bitmapCpc.Render(bmpLock, offsetX, offsetY, false);
-			pictureBox.Refresh();
+			if (doRender) {
+				bitmapCpc.CalcPaletteSplit();
+				bitmapCpc.Render(bmpLock, offsetX, offsetY, false);
+				if (chkChgt.Checked) {
+					LigneSplit lSpl = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value);
+					Graphics g = Graphics.FromImage(pictureBox.Image);
+					numCol = lSpl.numPen;
+					int xpos = lSpl.retard >> 2;
+					int x = xpos;
+					XorDrawing.DrawXorLine(g, (Bitmap)pictureBox.Image, x << 3, 0, x << 3, pictureBox.Image.Height);
+					for (int ns = 0; ns < 6; ns++) {
+						Split s = lSpl.GetSplit(ns);
+						if (s.enable) {
+							xpos += s.longueur >> 2;
+
+							if (xpos > 96)
+								xpos = 96;
+
+							// de x à xpos => faire palette = curPal
+							x = xpos;
+							XorDrawing.DrawXorLine(g, (Bitmap)pictureBox.Image, x << 3, 0, x << 3, pictureBox.Image.Height);
+						}
+						else
+							break;
+					}
+				}
+				pictureBox.Refresh();
+			}
 		}
 
 		private void pictureBox_MouseMove(object sender, MouseEventArgs e) {
@@ -178,27 +206,33 @@ namespace SplitEditor {
 		}
 
 		private void largSplit1_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(0, largSplit0);
+			if (doRender)
+				ChangeLargeur(0, largSplit0);
 		}
 
 		private void largSplit2_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(1, largSplit1);
+			if (doRender)
+				ChangeLargeur(1, largSplit1);
 		}
 
 		private void largSplit3_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(2, largSplit2);
+			if (doRender)
+				ChangeLargeur(2, largSplit2);
 		}
 
 		private void largSplit4_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(3, largSplit3);
+			if (doRender)
+				ChangeLargeur(3, largSplit3);
 		}
 
 		private void largSplit5_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(4, largSplit4);
+			if (doRender)
+				ChangeLargeur(4, largSplit4);
 		}
 
 		private void largSplit6_ValueChanged(object sender, EventArgs e) {
-			ChangeLargeur(5, largSplit5);
+			if (doRender)
+				ChangeLargeur(5, largSplit5);
 		}
 
 		private void EnableSplit(int index, CheckBox chk, CheckBox prec) {
@@ -211,27 +245,33 @@ namespace SplitEditor {
 		}
 
 		private void chkSplit1_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(0, chkSplit0, null);
+			if (doRender)
+				EnableSplit(0, chkSplit0, null);
 		}
 
 		private void chkSplit2_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(1, chkSplit1, chkSplit0);
+			if (doRender)
+				EnableSplit(1, chkSplit1, chkSplit0);
 		}
 
 		private void chkSplit3_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(2, chkSplit2, chkSplit1);
+			if (doRender)
+				EnableSplit(2, chkSplit2, chkSplit1);
 		}
 
 		private void chkSplit4_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(3, chkSplit3, chkSplit2);
+			if (doRender)
+				EnableSplit(3, chkSplit3, chkSplit2);
 		}
 
 		private void chkSplit5_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(4, chkSplit4, chkSplit3);
+			if (doRender)
+				EnableSplit(4, chkSplit4, chkSplit3);
 		}
 
 		private void chkSplit6_CheckedChanged(object sender, EventArgs e) {
-			EnableSplit(5, chkSplit5, chkSplit4);
+			if (doRender)
+				EnableSplit(5, chkSplit5, chkSplit4);
 		}
 
 		private void ChangeColor(int index) {
@@ -326,6 +366,10 @@ namespace SplitEditor {
 
 		private void pictureBox_MouseClick(object sender, MouseEventArgs e) {
 			numLigne.Value = e.Y >> 1;
+		}
+
+		private void chkChgt_CheckedChanged(object sender, EventArgs e) {
+			Render();
 		}
 	}
 }

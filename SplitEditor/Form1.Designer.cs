@@ -73,6 +73,7 @@
 			this.groupPal = new System.Windows.Forms.GroupBox();
 			this.bpImportSplit = new System.Windows.Forms.Button();
 			this.bpGenAsm = new System.Windows.Forms.Button();
+			this.chkChgt = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -737,11 +738,23 @@
 			this.bpGenAsm.UseVisualStyleBackColor = true;
 			this.bpGenAsm.Click += new System.EventHandler(this.bpGenAsm_Click);
 			// 
+			// chkChgt
+			// 
+			this.chkChgt.AutoSize = true;
+			this.chkChgt.Location = new System.Drawing.Point(151, 88);
+			this.chkChgt.Name = "chkChgt";
+			this.chkChgt.Size = new System.Drawing.Size(190, 17);
+			this.chkChgt.TabIndex = 19;
+			this.chkChgt.Text = "Afficher les lignes de changements";
+			this.chkChgt.UseVisualStyleBackColor = true;
+			this.chkChgt.CheckedChanged += new System.EventHandler(this.chkChgt_CheckedChanged);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1129, 725);
+			this.Controls.Add(this.chkChgt);
 			this.Controls.Add(this.bpGenAsm);
 			this.Controls.Add(this.bpImportSplit);
 			this.Controls.Add(this.groupPal);
@@ -834,6 +847,7 @@
 		private System.Windows.Forms.GroupBox groupPal;
 		private System.Windows.Forms.Button bpImportSplit;
 		private System.Windows.Forms.Button bpGenAsm;
+		private System.Windows.Forms.CheckBox chkChgt;
 
 	}
 }

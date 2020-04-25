@@ -67,6 +67,7 @@
     <Compile Include="PackDepack.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XorDrawing.cs" />
     <EmbeddedResource Include="EditColor.resx">
       <DependentUpon>EditColor.cs</DependentUpon>
     </EmbeddedResource>
