@@ -10,17 +10,12 @@ namespace SplitEditor {
 		public SplitEcran splitEcran = new SplitEcran();
 
 		static private int[] paletteStandardCPC = { 1, 24, 20, 6, 26, 0, 2, 7, 10, 12, 14, 16, 18, 22, 1, 14 };
-		static private int[] tabMasqueMode0 = { 0xAA, 0x55 };
-		static private int[] tabMasqueMode1 = { 0x88, 0x44, 0x22, 0x11 };
-		static private int[] tabMasqueMode2 = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-		static private int[] tabOctetMode01 = { 0x00, 0x80, 0x08, 0x88, 0x20, 0xA0, 0x28, 0xA8, 0x02, 0x82, 0x0A, 0x8A, 0x22, 0xA2, 0x2A, 0xAA };
-		const int maxColsCpc = 96;
-		const int maxLignesCpc = 272;
-		private int AdrCPC = -1;
+		private const int maxColsCpc = 96;
+		private const int maxLignesCpc = 272;
 
-		public const int Lum0 = 0x00;
-		public const int Lum1 = 0x66;
-		public const int Lum2 = 0xFF;
+		private const int Lum0 = 0x00;
+		private const int Lum1 = 0x66;
+		private const int Lum2 = 0xFF;
 
 		public const int retardMin = 4; // ### 4;
 
@@ -55,33 +50,12 @@ namespace SplitEditor {
 							};
 
 		private int nbCol = 80;
-		public int NbCol { get { return nbCol; } }
-		public int TailleX {
-			get { return nbCol << 3; }
-			set { nbCol = value >> 3; }
-		}
 		private int nbLig = 200;
-		public int NbLig { get { return nbLig; } }
-		public int TailleY {
-			get { return nbLig << 1; }
-			set { nbLig = value >> 1; }
-		}
-		public bool cpcPlus = false;
-
-		public int Size {
-			get {
-				GetAdrCpc(TailleY - 2);
-				return AdrCPC;
-			}
-		}
-
-		public BitmapCpc(byte[] source, int offset) {
-			System.Array.Copy(source, offset, bmpCpc, 0, source.Length - offset);
-		}
+		private bool cpcPlus = false;
 
 		public BitmapCpc(int tx, int ty, int mode) {
-			TailleX = tx;
-			TailleY = ty;
+			nbCol = tx >> 3;
+			nbLig = ty >> 1;
 			for (int y = 0; y < 272; y++) {
 				tabMode[y] = mode;
 				LigneSplit l = new LigneSplit();
@@ -94,14 +68,6 @@ namespace SplitEditor {
 					for (int i = 0; i < 16; i++)
 						Palette[x, y, i] = paletteStandardCPC[i]; // ### a reconstruire avec les splits ?
 			}
-		}
-
-		public void ClearBmp() {
-			System.Array.Clear(bmpCpc, 0, bmpCpc.Length);
-		}
-
-		public void SetPalette(int x, int y, int entree, int valeur) {
-			Palette[x, y, entree] = valeur;
 		}
 
 		private int AppliquePalette(int x, int y, int xpos, int[] curPal) {
@@ -168,62 +134,14 @@ namespace SplitEditor {
 			return RgbCPC[c < 27 ? c : 0].GetColor;
 		}
 
-		private void GetAdrCpc(int y) {
-			AdrCPC = (y >> 4) * nbCol + (y & 14) * 0x400;
-			if (y > 255 && (nbCol * nbLig > 0x3FFF))
-				AdrCPC += 0x3800;
-		}
-
-		public void SetPixelCpc(int xPos, int yPos, int col) {
-			GetAdrCpc(yPos);
-			byte octet = bmpCpc[AdrCPC + (xPos >> 3)];
-			switch (tabMode[yPos >> 1]) {
-				case 0:
-					octet = (byte)((octet & ~tabMasqueMode0[(xPos >> 2) & 1]) | (tabOctetMode01[col & 15] >> ((xPos >> 2) & 1)));
-					break;
-
-				case 1:
-				case 3:
-					octet = (byte)((octet & ~tabMasqueMode1[(xPos >> 1) & 3]) | (tabOctetMode01[col & 3] >> ((xPos >> 1) & 3)));
-					break;
-
-				case 2:
-					octet = ((col & 1) == 1) ? (byte)(octet | tabMasqueMode2[xPos & 7]) : (byte)(octet & ~tabMasqueMode2[xPos & 7]);
-					break;
-			}
-			bmpCpc[AdrCPC + (xPos >> 3)] = octet;
-		}
-
-		public int GetPixelCpc(int x, int y) {
-			GetAdrCpc(y);
-			byte octet = bmpCpc[AdrCPC + (x >> 3)];
-			switch (tabMode[y >> 1]) {
-				case 0:
-					octet = (byte)((octet & tabMasqueMode0[(x >> 2) & 1]) << ((x >> 2) & 1));
-					break;
-
-				case 1:
-				case 3:
-					octet = (byte)((octet & tabMasqueMode1[(x >> 1) & 3]) << ((x >> 1) & 3));
-					break;
-
-				case 2:
-					octet = (byte)((octet & tabMasqueMode2[x & 7]) << (x & 7));
-					break;
-			}
-			int Tx = 4 >> (tabMode[y >> 1] == 3 ? 1 : tabMode[y >> 1]);
-			for (int i = 0; i < Tx; i++)
-				if (octet == tabOctetMode01[i])
-					return i;
-
-			return 0;
-		}
-
 		public LockBitmap Render(LockBitmap bmp, int offsetX, int offsetY, bool getPalMode) {
 			bmp.LockBits();
-			for (int y = 0; y < TailleY; y += 2) {
+			for (int y = 0; y < (nbLig << 1); y += 2) {
 				int line = offsetY + y;
-				GetAdrCpc(line);
+				int AdrCPC = (line >> 4) * nbCol + (line & 14) * 0x400;
+				if (line > 255 && (nbCol * nbLig > 0x3FFF))
+					AdrCPC += 0x3800;
+
 				AdrCPC += offsetX >> 3;
 				int xBitmap = 0;
 				for (int x = 0; x < nbCol; x++) {

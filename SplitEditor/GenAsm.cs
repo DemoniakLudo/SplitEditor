@@ -88,7 +88,7 @@ namespace SplitEditor {
 				nbNops -= 4;
 			}
 			if (nbNops >= 2) {
-				wr.WriteLine("\tINC\tBC");
+				wr.WriteLine("\tCP\t(HL)");
 				nbNops -= 2;
 			}
 			for (; nbNops-- > 0; )
