@@ -323,5 +323,9 @@ namespace SplitEditor {
 				fs.Close();
 			}
 		}
+
+		private void pictureBox_MouseClick(object sender, MouseEventArgs e) {
+			numLigne.Value = e.Y >> 1;
+		}
 	}
 }
