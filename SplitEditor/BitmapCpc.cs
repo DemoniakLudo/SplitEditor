@@ -17,7 +17,7 @@ namespace SplitEditor {
 		private const int Lum1 = 0x66;
 		private const int Lum2 = 0xFF;
 
-		public const int retardMin = 4; // ### 4;
+		public const int retardMin = -4; // ### 4;
 
 		static public RvbColor[] RgbCPC = new RvbColor[27] {
 							new RvbColor( Lum0, Lum0, Lum0),

@@ -5,7 +5,7 @@ namespace SplitEditor {
 	static public class GenAsm {
 		static string CpcVGA = "TDU\\X]LEMVFW^@_NGORBSZY[JCK";
 
-		static private void WriteDebFile(StreamWriter wr) {
+		static private void WriteDebFile(StreamWriter wr, int retard) {
 			wr.WriteLine("\tORG #8000");
 			wr.WriteLine("\tRUN $");
 			wr.WriteLine("");
@@ -57,10 +57,9 @@ namespace SplitEditor {
 			wr.WriteLine("\tNEG");
 			wr.WriteLine("\tNEG");
 			wr.WriteLine("\tDJNZ\tWaitL0");
-			wr.WriteLine("\tNEG");
-			wr.WriteLine("\tNEG");
 			wr.WriteLine("\tLD\tBC,#7F8D");
 			wr.WriteLine("\tOUT\t(C),C");
+			GenereRetard(wr, retard);
 			wr.WriteLine("DebImage:");
 		}
 
@@ -112,7 +111,7 @@ namespace SplitEditor {
 		}
 
 		static public void CreeAsm(StreamWriter wr, BitmapCpc bmp) {
-			WriteDebFile(wr);
+			WriteDebFile(wr, 32 + BitmapCpc.retardMin);
 			int nbLigneVide = 0;
 			int tpsImage = 3;
 			int reste = 0;
