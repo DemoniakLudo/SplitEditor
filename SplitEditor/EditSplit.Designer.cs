@@ -74,6 +74,8 @@
 			this.bpImportSplit = new System.Windows.Forms.Button();
 			this.bpGenAsm = new System.Windows.Forms.Button();
 			this.chkChgt = new System.Windows.Forms.CheckBox();
+			this.pictureZoom = new System.Windows.Forms.PictureBox();
+			this.hScrollZoom = new System.Windows.Forms.HScrollBar();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -86,6 +88,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.modeCpc)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numPen)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.retard)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureZoom)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pictureBox
@@ -749,11 +752,30 @@
 			this.chkChgt.UseVisualStyleBackColor = true;
 			this.chkChgt.CheckedChanged += new System.EventHandler(this.chkChgt_CheckedChanged);
 			// 
-			// Form1
+			// pictureZoom
+			// 
+			this.pictureZoom.Location = new System.Drawing.Point(360, 723);
+			this.pictureZoom.Name = "pictureZoom";
+			this.pictureZoom.Size = new System.Drawing.Size(768, 112);
+			this.pictureZoom.TabIndex = 20;
+			this.pictureZoom.TabStop = false;
+			// 
+			// hScrollZoom
+			// 
+			this.hScrollZoom.Location = new System.Drawing.Point(360, 854);
+			this.hScrollZoom.Maximum = 672;
+			this.hScrollZoom.Name = "hScrollZoom";
+			this.hScrollZoom.Size = new System.Drawing.Size(768, 18);
+			this.hScrollZoom.TabIndex = 21;
+			this.hScrollZoom.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollZoom_Scroll);
+			// 
+			// EditSplit
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1129, 725);
+			this.ClientSize = new System.Drawing.Size(1129, 890);
+			this.Controls.Add(this.hScrollZoom);
+			this.Controls.Add(this.pictureZoom);
 			this.Controls.Add(this.chkChgt);
 			this.Controls.Add(this.bpGenAsm);
 			this.Controls.Add(this.bpImportSplit);
@@ -776,7 +798,7 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "Form1";
+			this.Name = "EditSplit";
 			this.Text = "Split Editor";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).EndInit();
@@ -791,6 +813,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.modeCpc)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numPen)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.retard)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureZoom)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -848,6 +871,8 @@
 		private System.Windows.Forms.Button bpImportSplit;
 		private System.Windows.Forms.Button bpGenAsm;
 		private System.Windows.Forms.CheckBox chkChgt;
+		private System.Windows.Forms.PictureBox pictureZoom;
+		private System.Windows.Forms.HScrollBar hScrollZoom;
 
 	}
 }
