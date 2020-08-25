@@ -324,7 +324,7 @@ namespace SplitEditor {
 
 		private void SetPalette(byte[] palStart, int startAdr, bool plus) {
 			for (int y = 0; y < 272; y++) {
-				tabMode[y] = palStart[startAdr] & 0x03;
+				tabMode[y] = palStart[startAdr]==6 ? 1 : palStart[startAdr] & 0x03;
 				for (int x = 0; x < 96; x++)
 					for (int i = 0; i < 16; i++)
 						Palette[x, y, i] = plus ? palStart[startAdr + 1 + (i << 1)] + (palStart[startAdr + 2 + (i << 1)] << 8) : palStart[startAdr + i + 1];

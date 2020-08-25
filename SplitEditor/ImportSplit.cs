@@ -85,8 +85,10 @@ namespace SplitEditor {
 				RvbColor p = loc.GetPixelColor(0, y << 1);
 				int curCol = (p.red > SEUIL_LUM_2 ? 2 : p.red > SEUIL_LUM_1 ? 1 : 0) + (p.blue > SEUIL_LUM_2 ? 6 : p.blue > SEUIL_LUM_1 ? 3 : 0) + (p.green > SEUIL_LUM_2 ? 18 : p.green > SEUIL_LUM_1 ? 9 : 0);
 				LigneSplit lSplit = splitEcran.LignesSplit[y];
-				for (int i = 0; i < 6; i++)
+				for (int i = 0; i < 6; i++) {
 					lSplit.ListeSplit[i].enable = false;
+					lSplit.ListeSplit[i].longueur = 32;
+				}
 
 				lSplit.numPen = (int)numPen.Value;
 				for (int x = 0; x < 96; x++) {
@@ -125,7 +127,7 @@ namespace SplitEditor {
 						if (!sameLine)
 							break;
 					}
-					if (y == 0 || numSplit > 0 || !sameLine) {
+					if (longSplit >= 32 && (y == 0 || numSplit > 0 || !sameLine)) {
 						lSplit.ListeSplit[numSplit].couleur = curCol;
 						lSplit.ListeSplit[numSplit].longueur = longSplit;
 						lSplit.ListeSplit[numSplit].enable = true;
