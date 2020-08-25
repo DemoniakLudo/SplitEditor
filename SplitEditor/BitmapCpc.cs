@@ -19,33 +19,33 @@ namespace SplitEditor {
 
 		public const int retardMin = -4; // ### 4;
 
-		static public RvbColor[] RgbCPC = new RvbColor[27] {
+		static public RvbColor[] RgbCPC = {
 							new RvbColor( Lum0, Lum0, Lum0),
-							new RvbColor( Lum1, Lum0, Lum0),
-							new RvbColor( Lum2, Lum0, Lum0),
 							new RvbColor( Lum0, Lum0, Lum1),
-							new RvbColor( Lum1, Lum0, Lum1),
-							new RvbColor( Lum2, Lum0, Lum1),
 							new RvbColor( Lum0, Lum0, Lum2),
+							new RvbColor( Lum1, Lum0, Lum0),
+							new RvbColor( Lum1, Lum0, Lum1),
 							new RvbColor( Lum1, Lum0, Lum2),
+							new RvbColor( Lum2, Lum0, Lum0),
+							new RvbColor( Lum2, Lum0, Lum1),
 							new RvbColor( Lum2, Lum0, Lum2),
 							new RvbColor( Lum0, Lum1, Lum0),
-							new RvbColor( Lum1, Lum1, Lum0),
-							new RvbColor( Lum2, Lum1, Lum0),
 							new RvbColor( Lum0, Lum1, Lum1),
-							new RvbColor( Lum1, Lum1, Lum1),
-							new RvbColor( Lum2, Lum1, Lum1),
 							new RvbColor( Lum0, Lum1, Lum2),
+							new RvbColor( Lum1, Lum1, Lum0),
+							new RvbColor( Lum1, Lum1, Lum1),
 							new RvbColor( Lum1, Lum1, Lum2),
+							new RvbColor( Lum2, Lum1, Lum0),
+							new RvbColor( Lum2, Lum1, Lum1),
 							new RvbColor( Lum2, Lum1, Lum2),
 							new RvbColor( Lum0, Lum2, Lum0),
-							new RvbColor( Lum1, Lum2, Lum0),
-							new RvbColor( Lum2, Lum2, Lum0),
 							new RvbColor( Lum0, Lum2, Lum1),
-							new RvbColor( Lum1, Lum2, Lum1),
-							new RvbColor( Lum2, Lum2, Lum1),
 							new RvbColor( Lum0, Lum2, Lum2),
+							new RvbColor( Lum1, Lum2, Lum0),
+							new RvbColor( Lum1, Lum2, Lum1),
 							new RvbColor( Lum1, Lum2, Lum2),
+							new RvbColor( Lum2, Lum2, Lum0),
+							new RvbColor( Lum2, Lum2, Lum1),
 							new RvbColor( Lum2, Lum2, Lum2)
 							};
 
@@ -134,44 +134,42 @@ namespace SplitEditor {
 			return RgbCPC[c < 27 ? c : 0].GetColor;
 		}
 
-		public LockBitmap Render(LockBitmap bmp, int offsetX, int offsetY, bool getPalMode) {
-			bmp.LockBits();
+		public DirectBitmap Render(DirectBitmap bmp, int offsetX, int offsetY, bool getPalMode) {
 			for (int y = 0; y < (nbLig << 1); y += 2) {
-				int line = offsetY + y;
-				int AdrCPC = (line >> 4) * nbCol + (line & 14) * 0x400;
-				if (line > 255 && (nbCol * nbLig > 0x3FFF))
-					AdrCPC += 0x3800;
+				int adrCPC = (y >> 4) * nbCol + (y & 14) * 0x400;
+				if (y > 255 && (nbCol * nbLig > 0x3FFF))
+					adrCPC += 0x3800;
 
-				AdrCPC += offsetX >> 3;
+				adrCPC += offsetX >> 3;
 				int xBitmap = 0;
 				for (int x = 0; x < nbCol; x++) {
-					byte Octet = bmpCpc[AdrCPC++];
+					byte octet = bmpCpc[adrCPC + x];
 					switch (tabMode[y >> 1]) {
 						case 0:
-							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, (Octet >> 7) + ((Octet & 0x20) >> 3) + ((Octet & 0x08) >> 2) + ((Octet & 0x02) << 2)]), 4);
-							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[x, line / 2, ((Octet & 0x40) >> 6) + ((Octet & 0x10) >> 2) + ((Octet & 0x04) >> 1) + ((Octet & 0x01) << 3)]), 4);
+							bmp.SetHorLineDouble(xBitmap, y, 4, GetPalCPC(Palette[x, y >> 1, (octet >> 7) + ((octet & 0x20) >> 3) + ((octet & 0x08) >> 2) + ((octet & 0x02) << 2)]));
+							bmp.SetHorLineDouble(xBitmap + 4, y, 4, GetPalCPC(Palette[x, y >> 1, ((octet & 0x40) >> 6) + ((octet & 0x10) >> 2) + ((octet & 0x04) >> 1) + ((octet & 0x01) << 3)]));
 							xBitmap += 8;
 							break;
 
 						case 1:
 						case 3:
-							bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 7) & 1) + ((Octet >> 2) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 2, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 6) & 1) + ((Octet >> 1) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 4, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 5) & 1) + ((Octet >> 0) & 2)]), 2);
-							bmp.SetFullPixel(xBitmap + 6, y, GetPalCPC(Palette[x, line / 2, ((Octet >> 4) & 1) + ((Octet << 1) & 2)]), 2);
+							bmp.SetHorLineDouble(xBitmap, y, 2, GetPalCPC(Palette[x, y >> 1, ((octet >> 7) & 1) + ((octet >> 2) & 2)]));
+							bmp.SetHorLineDouble(xBitmap + 2, y, 2, GetPalCPC(Palette[x, y >> 1, ((octet >> 6) & 1) + ((octet >> 1) & 2)]));
+							bmp.SetHorLineDouble(xBitmap + 4, y, 2, GetPalCPC(Palette[x, y >> 1, ((octet >> 5) & 1) + ((octet >> 0) & 2)]));
+							bmp.SetHorLineDouble(xBitmap + 6, y, 2, GetPalCPC(Palette[x, y >> 1, ((octet >> 4) & 1) + ((octet << 1) & 2)]));
 							xBitmap += 8;
 							break;
 
 						case 2:
 							for (int i = 8; i-- > 0; ) {
-								bmp.SetFullPixel(xBitmap, y, GetPalCPC(Palette[x, line / 2, (Octet >> i) & 1]), 1);
-								xBitmap++;
+								bmp.SetPixel(xBitmap, y, GetPalCPC(Palette[x, y >> 1, (octet >> i) & 1]));
+								bmp.SetPixel(xBitmap++, y + 1, GetPalCPC(Palette[x, y >> 1, (octet >> i) & 1]));
 							}
 							break;
 					}
 				}
 			}
-			bmp.UnlockBits();
+
 			return bmp;
 		}
 
@@ -324,7 +322,7 @@ namespace SplitEditor {
 
 		private void SetPalette(byte[] palStart, int startAdr, bool plus) {
 			for (int y = 0; y < 272; y++) {
-				tabMode[y] = palStart[startAdr]==6 ? 1 : palStart[startAdr] & 0x03;
+				tabMode[y] = palStart[startAdr] == 6 ? 1 : palStart[startAdr] & 0x03;
 				for (int x = 0; x < 96; x++)
 					for (int i = 0; i < 16; i++)
 						Palette[x, y, i] = plus ? palStart[startAdr + 1 + (i << 1)] + (palStart[startAdr + 2 + (i << 1)] << 8) : palStart[startAdr + i + 1];

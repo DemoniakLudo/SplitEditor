@@ -132,7 +132,7 @@ namespace SplitEditor {
 			int nbLigneVide = 0;
 			int tpsImage = 3;
 			int reste = 0;
-			int oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldc6 = 0;
+			int oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldc6 = 0, oldPen = 0;
 			for (int y = 0; y < 272; y++) {
 				LigneSplit lSpl = bmp.splitEcran.LignesSplit[y];
 				if (lSpl.ListeSplit[0].enable) {
@@ -145,8 +145,13 @@ namespace SplitEditor {
 					GenereRetard(wr, retard + retPrec);
 					int retSameCol = 0;
 					wr.WriteLine("; ---- Ligne " + y.ToString() + " ----");
-					wr.WriteLine("	LD	C," + lSpl.numPen.ToString() + "			; (2 NOPs)");
-					wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
+					if (reste < 0 && lSpl.numPen == oldPen)
+						GenereRetard(wr, (6 + reste) << 3);
+					else {
+						wr.WriteLine("	LD	C," + lSpl.numPen.ToString() + "			; (2 NOPs)");
+						wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
+						oldPen = lSpl.numPen;
+					}
 					int c1 = CpcVGA[lSpl.ListeSplit[0].couleur];
 					wr.WriteLine("	LD	C,#" + c1.ToString("X2") + "			; (2 NOPs)");
 					int c2 = CpcVGA[lSpl.ListeSplit[1].couleur];

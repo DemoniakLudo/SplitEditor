@@ -8,6 +8,7 @@ using System.Windows.Forms;
 namespace SplitEditor {
 	public partial class ImportSplit : Form {
 		private SplitEcran splitEcran;
+		DirectBitmap bmpSplit = new DirectBitmap(768, 544);
 
 		private const int SEUIL_LUM_1 = 85;		// 0x40;
 		private const int SEUIL_LUM_2 = 170;	// 0x80;
@@ -33,23 +34,20 @@ namespace SplitEditor {
 				Bitmap bmpRead = new Bitmap(ms);
 				bmpRead = bmpRead.Clone(new Rectangle(0, 0, bmpRead.Width, bmpRead.Height), PixelFormat.Format32bppArgb);
 				if (bmpRead.Width == 384 && bmpRead.Height == 272) {
-					LockBitmap locRead = new LockBitmap(bmpRead);
-					locRead.LockBits();
-					Bitmap bmp = new Bitmap(768, 544);
+					Graphics g = Graphics.FromImage(bmpSplit.Bitmap);
+					g.DrawImage(bmpRead, 0, 0, 768, 544);
 					for (int y = 0; y < 272; y++)
 						for (int x = 0; x < 384; x++) {
-							RvbColor p = locRead.GetPixelColor(x, y);
-							int indexChoix = (p.red > SEUIL_LUM_2 ? 2 : p.red > SEUIL_LUM_1 ? 1 : 0) + (p.blue > SEUIL_LUM_2 ? 6 : p.blue > SEUIL_LUM_1 ? 3 : 0) + (p.green > SEUIL_LUM_2 ? 18 : p.green > SEUIL_LUM_1 ? 9 : 0);
-							locRead.SetPixel(x, y, BitmapCpc.RgbCPC[indexChoix].GetColor);
+							RvbColor p = bmpSplit.GetPixelColor(x, y);
+							int indexChoix = (p.r > SEUIL_LUM_2 ? 6 : p.r > SEUIL_LUM_1 ? 3 : 0) + (p.b > SEUIL_LUM_2 ? 2 : p.b > SEUIL_LUM_1 ? 1 : 0) + (p.v > SEUIL_LUM_2 ? 18 : p.v > SEUIL_LUM_1 ? 9 : 0);
+							bmpSplit.SetPixel(x, y, BitmapCpc.RgbCPC[indexChoix].GetColor);
 						}
-					locRead.UnlockBits();
-					Graphics g = Graphics.FromImage(bmp);
 					g.SmoothingMode = SmoothingMode.None;
 					g.InterpolationMode = InterpolationMode.NearestNeighbor;
 					g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 					g.CompositingQuality = CompositingQuality.AssumeLinear;
 					g.DrawImage(bmpRead, new Rectangle(0, 0, 768, 544));
-					pictureSplit.Image = bmp;
+					pictureSplit.Image = bmpSplit.Bitmap;
 					bitmapOk = true;
 					ValideSplit();
 				}
@@ -77,13 +75,11 @@ namespace SplitEditor {
 
 		private void ValideSplit() {
 			listErr.Items.Clear();
-			LockBitmap loc = new LockBitmap((Bitmap)pictureSplit.Image);
-			loc.LockBits();
 			int lastLineWrite = 0;
 			for (int y = 0; y < 272; y++) {
 				int numSplit = 0, longSplit = 0;
-				RvbColor p = loc.GetPixelColor(0, y << 1);
-				int curCol = (p.red > SEUIL_LUM_2 ? 2 : p.red > SEUIL_LUM_1 ? 1 : 0) + (p.blue > SEUIL_LUM_2 ? 6 : p.blue > SEUIL_LUM_1 ? 3 : 0) + (p.green > SEUIL_LUM_2 ? 18 : p.green > SEUIL_LUM_1 ? 9 : 0);
+				RvbColor p = bmpSplit.GetPixelColor(0, y << 1);
+				int curCol = (p.r > SEUIL_LUM_2 ? 6 : p.r > SEUIL_LUM_1 ? 3 : 0) + (p.b > SEUIL_LUM_2 ? 2 : p.b > SEUIL_LUM_1 ? 1 : 0) + (p.v > SEUIL_LUM_2 ? 18 : p.v > SEUIL_LUM_1 ? 9 : 0);
 				LigneSplit lSplit = splitEcran.LignesSplit[y];
 				for (int i = 0; i < 6; i++) {
 					lSplit.ListeSplit[i].enable = false;
@@ -95,9 +91,9 @@ namespace SplitEditor {
 					int posY = y << 1;
 					int posX = (x << 3) + (BitmapCpc.retardMin << 1);
 					if (posX < 768 && posX >= 0) {
-						p = loc.GetPixelColor(posX, posY);
+						p = bmpSplit.GetPixelColor(posX, posY);
 						// Recherche la couleur cpc la plus proche
-						int indexChoix = (p.red > SEUIL_LUM_2 ? 2 : p.red > SEUIL_LUM_1 ? 1 : 0) + (p.blue > SEUIL_LUM_2 ? 6 : p.blue > SEUIL_LUM_1 ? 3 : 0) + (p.green > SEUIL_LUM_2 ? 18 : p.green > SEUIL_LUM_1 ? 9 : 0);
+						int indexChoix = (p.r > SEUIL_LUM_2 ? 6 : p.r > SEUIL_LUM_1 ? 3 : 0) + (p.b > SEUIL_LUM_2 ? 2 : p.b > SEUIL_LUM_1 ? 1 : 0) + (p.v > SEUIL_LUM_2 ? 18 : p.v > SEUIL_LUM_1 ? 9 : 0);
 						if (indexChoix != curCol && longSplit >= 32) {
 							lSplit.ListeSplit[numSplit].couleur = curCol;
 							lSplit.ListeSplit[numSplit].longueur = longSplit;
@@ -135,7 +131,6 @@ namespace SplitEditor {
 					}
 				}
 			}
-			loc.UnlockBits();
 		}
 	}
 }

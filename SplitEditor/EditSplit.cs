@@ -6,8 +6,7 @@ using System.Xml.Serialization;
 
 namespace SplitEditor {
 	public partial class EditSplit : Form {
-		private Bitmap bmp;
-		private LockBitmap bmpLock;
+		private DirectBitmap bmpLock;
 		public BitmapCpc bitmapCpc;
 		private int offsetX = 0, offsetY = 0;
 		private int numCol = 0;
@@ -17,16 +16,15 @@ namespace SplitEditor {
 		private LigneSplit curLigneSplit;
 		private Label[] colors = new Label[16];
 		private bool doRender;
-		private Bitmap bitmapZoom;
+		private DirectBitmap bitmapZoom;
 
 		public EditSplit() {
 			InitializeComponent();
 			int tx = pictureBox.Width;
 			int ty = pictureBox.Height;
-			bmp = new Bitmap(tx, ty);
-			pictureBox.Image = bmp;
-			bitmapZoom = new Bitmap(pictureZoom.Width >> 3, pictureZoom.Height >> 3, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-			bmpLock = new LockBitmap(bmp);
+			bitmapZoom = new DirectBitmap(pictureZoom.Width >> 3, pictureZoom.Height >> 3);
+			bmpLock = new DirectBitmap(tx, ty);
+			pictureBox.Image = bmpLock.Bitmap;
 			bitmapCpc = new BitmapCpc(taillex << 1, tailley << 1, mode); // ###
 			retard.Minimum = BitmapCpc.retardMin;
 			retard.Maximum = BitmapCpc.retardMin + 32;
@@ -103,12 +101,9 @@ namespace SplitEditor {
 
 		public void Reset() {
 			int col = System.Drawing.SystemColors.Control.ToArgb();
-			bmpLock.LockBits();
 			for (int x = 0; x < bmpLock.Width; x++)
 				for (int y = 0; y < bmpLock.Height; y++)
 					bmpLock.SetPixel(x, y, col);
-
-			bmpLock.UnlockBits();
 		}
 
 		public void Render() {
@@ -145,15 +140,10 @@ namespace SplitEditor {
 
 		private void DrawZoomPicture() {
 			int posy = Math.Max(0, Math.Min(((int)numLigne.Value << 1) - 7, bmpLock.Height - 14));
-			LockBitmap lockZoom = new LockBitmap(bitmapZoom);
-			lockZoom.LockBits();
-			bmpLock.LockBits();
 			for (int y = 0; y < bitmapZoom.Height; y++)
 				for (int x = 0; x < bitmapZoom.Width; x++)
-					lockZoom.SetPixel(x, y, bmpLock.GetPixelColor(x + hScrollZoom.Value, y + posy).GetColorArgb);
+					bitmapZoom.SetPixel(x, y, bmpLock.GetPixelColor(x + hScrollZoom.Value, y + posy).GetColorArgb);
 
-			lockZoom.UnlockBits();
-			bmpLock.UnlockBits();
 			Bitmap zoomed = (Bitmap)pictureZoom.Image;
 			if (zoomed != null)
 				zoomed.Dispose();
@@ -161,7 +151,7 @@ namespace SplitEditor {
 			zoomed = new Bitmap(bitmapZoom.Width << 3, bitmapZoom.Height << 3);
 			using (Graphics g = Graphics.FromImage(zoomed)) {
 				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-				g.DrawImage(bitmapZoom, new Rectangle(Point.Empty, zoomed.Size));
+				g.DrawImage(bitmapZoom.Bitmap, new Rectangle(Point.Empty, zoomed.Size));
 			}
 			pictureZoom.Image = zoomed;
 			pictureZoom.Refresh();

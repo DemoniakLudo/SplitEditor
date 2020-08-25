@@ -70,6 +70,11 @@
 			this.numPen.Name = "numPen";
 			this.numPen.Size = new System.Drawing.Size(45, 20);
 			this.numPen.TabIndex = 4;
+			this.numPen.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
 			// 
 			// listErr
 			// 
