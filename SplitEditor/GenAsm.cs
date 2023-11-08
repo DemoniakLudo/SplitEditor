@@ -3,14 +3,18 @@ using System.IO;
 
 namespace SplitEditor {
 	static public class GenAsm {
-		static string CpcVGA = "TDU\\X]LEMVFW^@_NGORBSZY[JCK";
+		static private string CpcVGA = "TDU\\X]LEMVFW^@_NGORBSZY[JCK";
+		static private byte[] bufPack = new byte[0x8000];
 
+		// Code d'initialisation
 		static private void WriteDebFile(StreamWriter wr, int nbPixels) {
-			wr.WriteLine("	ORG #8000");
 			wr.WriteLine("	RUN $");
 			wr.WriteLine("");
 			wr.WriteLine("	nolist");
 			wr.WriteLine("	DI");
+			wr.WriteLine("	LD	HL,ImageCmp");
+			wr.WriteLine("	LD	DE,#0200");
+			wr.WriteLine("	CALL	Depack");
 			wr.WriteLine("	LD	HL,(#38)");
 			wr.WriteLine("	LD	(RestoreIrq+1),HL");
 			wr.WriteLine("	LD	HL,#C9FB");
@@ -38,6 +42,8 @@ namespace SplitEditor {
 			wr.WriteLine("	INC	A");
 			wr.WriteLine("	CP	16");
 			wr.WriteLine("	JR	NZ,BclPalette");
+			wr.WriteLine("	EI");
+			wr.WriteLine("	HALT");
 			wr.WriteLine("Boucle:");
 			wr.WriteLine("	LD	B,#F5");
 			wr.WriteLine("WaitVbl:");
@@ -101,11 +107,123 @@ namespace SplitEditor {
 				wr.WriteLine("	CP	(HL)			; Attendre 2 NOPs");
 				nbNops -= 2;
 			}
-			for (; nbNops-- > 0; )
+			for (; nbNops-- > 0;)
 				wr.WriteLine("	NOP				; Attendre 1 NOP");
 		}
 
-		static private void WriteEndFile(StreamWriter wr, int[, ,] palette) {
+		static private void GenereDZX0(StreamWriter sw, string jumpLabel = null) {
+			sw.WriteLine("; Decompactage");
+			sw.WriteLine("Depack:");
+			sw.WriteLine("	ld	bc,#ffff			; preserve default offset 1");
+			sw.WriteLine("	push	bc");
+			sw.WriteLine("	inc	bc");
+			sw.WriteLine("	ld	a,#80");
+			sw.WriteLine("dzx0s_literals:");
+			sw.WriteLine("	call	dzx0s_elias		; obtain length");
+			sw.WriteLine("	ldir					; copy literals");
+			sw.WriteLine("	add	a,a					; copy from last offset or new offset?");
+			sw.WriteLine("	jr	c,dzx0s_new_offset");
+			sw.WriteLine("	call	dzx0s_elias		; obtain length");
+			sw.WriteLine("dzx0s_copy:");
+			sw.WriteLine("	ex	(sp),hl				; preserve source,restore offset");
+			sw.WriteLine("	push	hl				; preserve offset");
+			sw.WriteLine("	add	hl,de				; calculate destination - offset");
+			sw.WriteLine("	ldir					; copy from offset");
+			sw.WriteLine("	pop	hl					; restore offset");
+			sw.WriteLine("	ex	(sp),hl				; preserve offset,restore source");
+			sw.WriteLine("	add	a,a					; copy from literals or new offset?");
+			sw.WriteLine("	jr	nc,dzx0s_literals");
+			sw.WriteLine("dzx0s_new_offset:");
+			sw.WriteLine("	call	dzx0s_elias		; obtain offset MSB");
+			sw.WriteLine("	ld b,a");
+			sw.WriteLine("	pop	af					; discard last offset");
+			sw.WriteLine("	xor	a					; adjust for negative offset");
+			sw.WriteLine("	sub	c");
+			sw.WriteLine((jumpLabel != null ? ("	JP	Z," + jumpLabel) : "	RET	Z") + "		; Plus d'octets à traiter = fini" + Environment.NewLine);
+			sw.WriteLine("	ld	c,a");
+			sw.WriteLine("	ld	a,b");
+			sw.WriteLine("	ld	b,c");
+			sw.WriteLine("	ld	c,(hl)				; obtain offset LSB");
+			sw.WriteLine("	inc	hl");
+			sw.WriteLine("	rr	b					; last offset bit becomes first length bit");
+			sw.WriteLine("	rr	c");
+			sw.WriteLine("	push	bc				; preserve new offset");
+			sw.WriteLine("	ld	bc,1				; obtain length");
+			sw.WriteLine("	call	nc,dzx0s_elias_backtrack");
+			sw.WriteLine("	inc	bc");
+			sw.WriteLine("	jr	dzx0s_copy");
+			sw.WriteLine("dzx0s_elias:");
+			sw.WriteLine("	inc	c					; interlaced Elias gamma coding");
+			sw.WriteLine("dzx0s_elias_loop:");
+			sw.WriteLine("	add	a,a");
+			sw.WriteLine("	jr	nz,dzx0s_elias_skip");
+			sw.WriteLine("	ld	a,(hl)				; load another group of 8 bits");
+			sw.WriteLine("	inc	hl");
+			sw.WriteLine("	rla");
+			sw.WriteLine("dzx0s_elias_skip:");
+			sw.WriteLine("	ret 	c");
+			sw.WriteLine("dzx0s_elias_backtrack:");
+			sw.WriteLine("	add	a,a");
+			sw.WriteLine("	rl	c");
+			sw.WriteLine("	rl	b");
+			sw.WriteLine("	jr	dzx0s_elias_loop");
+		}
+
+		static public void GenereInitOld(StreamWriter sw) {
+			sw.WriteLine("	LD	HL,Palette");
+			sw.WriteLine("	LD	B,#7F");
+			sw.WriteLine("	XOR	A");
+			sw.WriteLine("SetPal:");
+			sw.WriteLine("	OUT	(C),A");
+			sw.WriteLine("	INC	B");
+			sw.WriteLine("	OUTI");
+			sw.WriteLine("	INC	A");
+			sw.WriteLine("	CP	18");
+			sw.WriteLine("	JR	C,SetPal");
+		}
+
+		static public void GenerePalette(StreamWriter sw, BitmapCpc bmp) {
+			sw.WriteLine("Palette:");
+			string line = "\tDB\t";
+			for (int i = 0; i < 17; i++) {
+				int k = bmp.Palette[0, 0, i];
+				line += "#" + ((int)CpcVGA[k < 27 ? k : 0]).ToString("X2") + ",";
+			}
+			line += "#8D";
+			sw.WriteLine(line);
+		}
+
+		static public void GenereDatas(StreamWriter sw, byte[] tabByte, int length, int nbOctetsLigne, int ligneSepa = 0, string labelSepa = null) {
+			string line = "\tDB\t";
+			int nbOctets = 0, nbLigne = 0, indiceLabel = 0;
+			if (labelSepa != null) {
+				sw.WriteLine(labelSepa + indiceLabel.ToString("00"));
+				indiceLabel++;
+			}
+			for (int i = 0; i < length; i++) {
+				line += "#" + tabByte[i].ToString("X2") + ",";
+				if (++nbOctets >= nbOctetsLigne) {
+					sw.WriteLine(line.Substring(0, line.Length - 1));
+					line = "\tDB\t";
+					nbOctets = 0;
+					if (i < length - 1 && ++nbLigne >= ligneSepa && ligneSepa > 0) {
+						nbLigne = 0;
+						if (labelSepa != null) {
+							sw.WriteLine(labelSepa + indiceLabel.ToString("00"));
+							indiceLabel++;
+						}
+						else
+							line += "\r\n";
+					}
+				}
+			}
+			if (nbOctets > 0)
+				sw.WriteLine(line.Substring(0, line.Length - 1));
+
+			sw.WriteLine("; Taille totale " + length.ToString() + " octets");
+		}
+
+		static private void WriteEndFile(StreamWriter wr, int[,,] palette) {
 			wr.WriteLine("	JP	Boucle");
 			wr.WriteLine("");
 			wr.WriteLine("	RestoreIrq:");
@@ -113,6 +231,7 @@ namespace SplitEditor {
 			wr.WriteLine("	LD	(#38),HL");
 			wr.WriteLine("	EI");
 			wr.WriteLine("	RET");
+			GenereDZX0(wr);
 			wr.WriteLine("");
 			wr.WriteLine("Overscan:");
 			wr.WriteLine("	DB	1,48,2,50,3,#8E,6,34,7,35,12,13,13,0,0,0,0");
@@ -128,6 +247,12 @@ namespace SplitEditor {
 		}
 
 		static public void CreeAsm(StreamWriter wr, BitmapCpc bmp) {
+			int lgPack = new PackModule().PackZX0(bmp.bmpCpc, 0x7CC0, bufPack, 0);
+			int org = 0x9000 - lgPack;
+			wr.WriteLine("	ORG	#" + org.ToString("X4"));
+			wr.WriteLine("	Nolist");
+			wr.WriteLine("ImageCmp:");
+			GenereDatas(wr, bufPack, lgPack, 16);
 			WriteDebFile(wr, 32 + BitmapCpc.retardMin);
 			int nbLigneVide = 0;
 			int tpsImage = 3;
@@ -231,6 +356,7 @@ namespace SplitEditor {
 				tpsImage -= ((nbLigneVide * 64) + reste);
 
 			GenereRetard(wr, (17439 - tpsImage) << 3);
+			wr.WriteLine("	List");
 			WriteEndFile(wr, bmp.Palette);
 		}
 	}

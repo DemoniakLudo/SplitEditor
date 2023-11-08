@@ -17,15 +17,6 @@ public class DirectBitmap : IDisposable {
 		CreateBitmap(width, height);
 	}
 
-	public DirectBitmap(DirectBitmap source) {
-		CreateBitmap(source.Width, source.Height);
-		CopyBits(source);
-	}
-
-	public void CopyBits(DirectBitmap source) {
-		Array.Copy(source.Bits, Bits, Bits.Length);
-	}
-
 	private void CreateBitmap(int width, int height) {
 		Width = width;
 		Height = height;
@@ -36,14 +27,6 @@ public class DirectBitmap : IDisposable {
 
 	public void SetPixel(int x, int y, int c) {
 		Bits[x + (y * Width)] = (uint)c | 0xFF000000;
-	}
-
-	public void SetPixel(int x, int y, RvbColor color) {
-		Bits[x + (y * Width)] = (uint)color.GetColorArgb | 0xFF000000;
-	}
-
-	public int GetPixel(int x, int y) {
-		return (int)(Bits[x + (y * Width)] & 0xFFFFFF);
 	}
 
 	public RvbColor GetPixelColor(int x, int y) {

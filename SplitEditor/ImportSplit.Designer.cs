@@ -94,7 +94,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.bpLire);
 			this.Controls.Add(this.pictureSplit);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ImportSplit";

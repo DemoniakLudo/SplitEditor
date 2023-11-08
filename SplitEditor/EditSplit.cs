@@ -93,12 +93,6 @@ namespace SplitEditor {
 			}
 		}
 
-		//// Changement de la palette
-		//private void ClickColor(object sender, System.EventArgs e) {
-		//	Label colorClick = sender as Label;
-		//	numCol = colorClick.Tag != null ? (int)colorClick.Tag : 0;
-		//}
-
 		public void Reset() {
 			int col = System.Drawing.SystemColors.Control.ToArgb();
 			for (int x = 0; x < bmpLock.Width; x++)
@@ -164,8 +158,7 @@ namespace SplitEditor {
 		}
 
 		private void bpSave_Click(object sender, EventArgs e) {
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Filter = "Fichiers SplitEditor (*.xml)|*.xml";
+			SaveFileDialog dlg = new SaveFileDialog { Filter = "Fichiers SplitEditor (*.xml)|*.xml" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Create);
@@ -180,8 +173,7 @@ namespace SplitEditor {
 		}
 
 		private void bpLoad_Click(object sender, EventArgs e) {
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Fichiers SplitEditor (*.xml)|*.xml";
+			OpenFileDialog dlg = new OpenFileDialog { Filter = "Fichiers SplitEditor (*.xml)|*.xml" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				FileStream file = File.Open(dlg.FileName, FileMode.Open);
@@ -330,8 +322,7 @@ namespace SplitEditor {
 		}
 
 		private void bpImportImage_Click(object sender, EventArgs e) {
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Images cpc (.scr)|*.scr|Tous fichiers|*.*";
+			OpenFileDialog dlg = new OpenFileDialog { Filter = "Images cpc (.scr)|*.scr|Tous fichiers|*.*" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				try {
@@ -369,15 +360,16 @@ namespace SplitEditor {
 		}
 
 		private void bpGenAsm_Click(object sender, EventArgs e) {
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Filter = "Fichiers assembleur (*.asm)|*.asm";
+			SaveFileDialog dlg = new SaveFileDialog { Filter = "Fichiers assembleur (*.asm)|*.asm" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
+				Enabled = false;
 				FileStream fs = new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write);
 				StreamWriter sw = new StreamWriter(fs);
 				GenAsm.CreeAsm(sw, bitmapCpc);
 				sw.Close();
 				fs.Close();
+				Enabled = true;
 			}
 		}
 

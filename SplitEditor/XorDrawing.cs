@@ -169,18 +169,4 @@ public static class XorDrawing {
 
 		FinishDraw(bmp, graphics, hdc, oldpen, oldRop, img, dash);
 	}
-
-	public static void DrawXorRectangle(this Graphics graphics, Bitmap bmp, int x1, int y1, int x2, int y2, bool dash = true) {
-		int oldRop;
-		IntPtr oldpen, img;
-		var hdc = BeginDraw(bmp, graphics, x1, y1, x2, y2, dash, out oldRop, out img, out oldpen);
-
-		MoveToEx(hdc, x1, y1, IntPtr.Zero); //clockwise
-		LineTo(hdc, x2, y1);
-		LineTo(hdc, x2, y2);
-		LineTo(hdc, x1, y2);
-		LineTo(hdc, x1, y1);
-
-		FinishDraw(bmp, graphics, hdc, oldpen, oldRop, img, dash);
-	}
 }
