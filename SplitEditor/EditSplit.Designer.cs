@@ -69,13 +69,14 @@
 			this.bpImportImage = new System.Windows.Forms.Button();
 			this.lblInfo = new System.Windows.Forms.Label();
 			this.bpCopieLigne = new System.Windows.Forms.Button();
-			this.chkAutoApplique = new System.Windows.Forms.CheckBox();
 			this.groupPal = new System.Windows.Forms.GroupBox();
 			this.bpImportSplit = new System.Windows.Forms.Button();
 			this.bpGenAsm = new System.Windows.Forms.Button();
 			this.chkChgt = new System.Windows.Forms.CheckBox();
 			this.pictureZoom = new System.Windows.Forms.PictureBox();
 			this.hScrollZoom = new System.Windows.Forms.HScrollBar();
+			this.bpSaveImage = new System.Windows.Forms.Button();
+			this.bpRepack = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -677,7 +678,7 @@
 			// 
 			this.bpImportImage.Location = new System.Drawing.Point(639, 9);
 			this.bpImportImage.Name = "bpImportImage";
-			this.bpImportImage.Size = new System.Drawing.Size(109, 23);
+			this.bpImportImage.Size = new System.Drawing.Size(143, 23);
 			this.bpImportImage.TabIndex = 12;
 			this.bpImportImage.Text = "Importer Image";
 			this.bpImportImage.UseVisualStyleBackColor = true;
@@ -701,16 +702,6 @@
 			this.bpCopieLigne.Text = "Copier ligne précédente";
 			this.bpCopieLigne.UseVisualStyleBackColor = true;
 			this.bpCopieLigne.Click += new System.EventHandler(this.bpCopieLigne_Click);
-			// 
-			// chkAutoApplique
-			// 
-			this.chkAutoApplique.AutoSize = true;
-			this.chkAutoApplique.Location = new System.Drawing.Point(349, 13);
-			this.chkAutoApplique.Name = "chkAutoApplique";
-			this.chkAutoApplique.Size = new System.Drawing.Size(154, 17);
-			this.chkAutoApplique.TabIndex = 15;
-			this.chkAutoApplique.Text = "Appliquer automatiquement";
-			this.chkAutoApplique.UseVisualStyleBackColor = true;
 			// 
 			// groupPal
 			// 
@@ -769,18 +760,39 @@
 			this.hScrollZoom.TabIndex = 21;
 			this.hScrollZoom.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollZoom_Scroll);
 			// 
+			// bpSaveImage
+			// 
+			this.bpSaveImage.Location = new System.Drawing.Point(639, 38);
+			this.bpSaveImage.Name = "bpSaveImage";
+			this.bpSaveImage.Size = new System.Drawing.Size(143, 23);
+			this.bpSaveImage.TabIndex = 22;
+			this.bpSaveImage.Text = "Sauver image compactée";
+			this.bpSaveImage.UseVisualStyleBackColor = true;
+			this.bpSaveImage.Click += new System.EventHandler(this.bpSaveImage_Click);
+			// 
+			// bpRepack
+			// 
+			this.bpRepack.Location = new System.Drawing.Point(788, 9);
+			this.bpRepack.Name = "bpRepack";
+			this.bpRepack.Size = new System.Drawing.Size(122, 23);
+			this.bpRepack.TabIndex = 23;
+			this.bpRepack.Text = "Recompacter Image";
+			this.bpRepack.UseVisualStyleBackColor = true;
+			this.bpRepack.Click += new System.EventHandler(this.bpRepack_Click);
+			// 
 			// EditSplit
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1129, 890);
+			this.Controls.Add(this.bpRepack);
+			this.Controls.Add(this.bpSaveImage);
 			this.Controls.Add(this.hScrollZoom);
 			this.Controls.Add(this.pictureZoom);
 			this.Controls.Add(this.chkChgt);
 			this.Controls.Add(this.bpGenAsm);
 			this.Controls.Add(this.bpImportSplit);
 			this.Controls.Add(this.groupPal);
-			this.Controls.Add(this.chkAutoApplique);
 			this.Controls.Add(this.bpCopieLigne);
 			this.Controls.Add(this.lblInfo);
 			this.Controls.Add(this.bpImportImage);
@@ -866,14 +878,14 @@
 		private System.Windows.Forms.Button bpImportImage;
 		private System.Windows.Forms.Label lblInfo;
 		private System.Windows.Forms.Button bpCopieLigne;
-		private System.Windows.Forms.CheckBox chkAutoApplique;
 		private System.Windows.Forms.GroupBox groupPal;
 		private System.Windows.Forms.Button bpImportSplit;
 		private System.Windows.Forms.Button bpGenAsm;
 		private System.Windows.Forms.CheckBox chkChgt;
 		private System.Windows.Forms.PictureBox pictureZoom;
 		private System.Windows.Forms.HScrollBar hScrollZoom;
-
+		private System.Windows.Forms.Button bpSaveImage;
+		private System.Windows.Forms.Button bpRepack;
 	}
 }
 

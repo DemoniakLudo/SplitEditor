@@ -56,24 +56,24 @@ namespace SplitEditor {
 			numPen.Value = curLigneSplit.numPen;
 			lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
 			largSplit0.Value = curLigneSplit.GetSplit(0).longueur;
-			lblColor0.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(0).couleur].GetColorArgb);
+			lblColor0.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(0).couleur].GetColorArgb);
 			lblColor1.Visible = largSplit1.Visible = chkSplit1.Checked = curLigneSplit.GetSplit(1).enable;
 			largSplit1.Value = curLigneSplit.GetSplit(1).longueur;
-			lblColor1.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(1).couleur].GetColorArgb);
+			lblColor1.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(1).couleur].GetColorArgb);
 			lblColor2.Visible = largSplit2.Visible = chkSplit2.Checked = curLigneSplit.GetSplit(2).enable;
 			largSplit2.Value = curLigneSplit.GetSplit(2).longueur;
-			lblColor2.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(2).couleur].GetColorArgb);
+			lblColor2.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(2).couleur].GetColorArgb);
 			lblColor3.Visible = largSplit3.Visible = chkSplit3.Checked = curLigneSplit.GetSplit(3).enable;
 			largSplit3.Value = curLigneSplit.GetSplit(3).longueur;
-			lblColor3.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(3).couleur].GetColorArgb);
+			lblColor3.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(3).couleur].GetColorArgb);
 			lblColor4.Visible = largSplit4.Visible = chkSplit4.Checked = curLigneSplit.GetSplit(4).enable;
 			largSplit4.Value = curLigneSplit.GetSplit(4).longueur;
-			lblColor4.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(4).couleur].GetColorArgb);
+			lblColor4.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(4).couleur].GetColorArgb);
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
-			lblColor5.BackColor = System.Drawing.Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
+			lblColor5.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
 			doRender = true;
-			if (chkAutoApplique.Checked || forceRender) {
+			if (forceRender) {
 				UpdatePalette();
 				Render();
 			}
@@ -321,20 +321,6 @@ namespace SplitEditor {
 			Render();
 		}
 
-		private void bpImportImage_Click(object sender, EventArgs e) {
-			OpenFileDialog dlg = new OpenFileDialog { Filter = "Images cpc (.scr)|*.scr|Tous fichiers|*.*" };
-			DialogResult result = dlg.ShowDialog();
-			if (result == DialogResult.OK) {
-				try {
-					if (bitmapCpc.CreateImageFile(dlg.FileName))
-						DisplayLigne(true);
-				}
-				catch (Exception ex) {
-					MessageBox.Show(ex.StackTrace, ex.Message);
-				}
-			}
-		}
-
 		private void bpCopieLigne_Click(object sender, EventArgs e) {
 			if ((int)numLigne.Value > 0) {
 				LigneSplit lignePrec = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value - 1);
@@ -351,6 +337,27 @@ namespace SplitEditor {
 			}
 		}
 
+		private void bpImportImage_Click(object sender, EventArgs e) {
+			OpenFileDialog dlg = new OpenFileDialog { Filter = "Images cpc (.scr)|*.scr|Images compactées (.cmp)|*.cmp|Tous fichiers|*.*" };
+			DialogResult result = dlg.ShowDialog();
+			if (result == DialogResult.OK) {
+				try {
+					if (bitmapCpc.CreateImageFile(dlg.FileName))
+						DisplayLigne(true);
+				}
+				catch (Exception ex) {
+					MessageBox.Show(ex.StackTrace, ex.Message);
+				}
+			}
+		}
+
+		private void bpRepack_Click(object sender, EventArgs e) {
+			Enabled = false;
+			bitmapCpc.Repack();
+			Enabled = true;
+		}
+
+
 		private void bpImportSplit_Click(object sender, EventArgs e) {
 			Enabled = false;
 			ImportSplit imp = new ImportSplit(bitmapCpc.splitEcran);
@@ -359,8 +366,19 @@ namespace SplitEditor {
 			Enabled = true;
 		}
 
+		private void bpSaveImage_Click(object sender, EventArgs e) {
+			SaveFileDialog dlg = new SaveFileDialog { Filter = "Image compactées (*.cmp)|*.cmp" };
+			DialogResult result = dlg.ShowDialog();
+			if (result == DialogResult.OK) {
+				Enabled = false;
+				//
+				Enabled = true;
+			}
+		}
+
+
 		private void bpGenAsm_Click(object sender, EventArgs e) {
-			SaveFileDialog dlg = new SaveFileDialog { Filter = "Fichiers assembleur (*.asm)|*.asm" };
+			SaveFileDialog dlg = new SaveFileDialog { Filter = "Source assembleur (*.asm)|*.asm" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
 				Enabled = false;

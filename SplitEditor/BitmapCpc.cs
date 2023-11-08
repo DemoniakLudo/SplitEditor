@@ -5,9 +5,9 @@ namespace SplitEditor {
 		private const int maxColsCpc = 96;
 		private const int maxLignesCpc = 272;
 
-		static private byte[] bufTmp = new byte[0x10000];
+		public byte[] bufPack = new byte[0x10000];
+		public int lgPack = 0;
 		public byte[] bmpCpc = new byte[0x10000];
-		public byte[] imgAscii = new byte[0x1000];
 
 		public int[,,] Palette = new int[96, 272, 17];
 		public int[] tabMode = new int[272];
@@ -172,12 +172,20 @@ namespace SplitEditor {
 			BinaryReader br = new BinaryReader(fs);
 			br.Read(Entete, 0, 0x80);
 			if (CpcSystem.CheckAmsdos(Entete)) {
-				br.Read(bmpCpc, 0, 0x10000);
-				InitDatas();
+				int size = br.Read(bmpCpc, 0, 0x10000);
+				InitDatas(size);
 				ret = true;
 			}
 			br.Close();
 			return (ret);
+		}
+
+		public void Repack() {
+			PackModule p = new PackModule();
+			for (int i = 0x600; i < 0x7FF; i++)
+				bmpCpc[i] = bmpCpc[i + 0x800] = bmpCpc[i + 0x1000] = bmpCpc[i + 0x1800] = bmpCpc[i + 0x2000] = bmpCpc[i + 0x2800] = bmpCpc[i + 0x3000] = 0;
+
+			lgPack = p.PackZX0(bmpCpc, 0x7CC0, bufPack, 0);
 		}
 
 		private void SetPalette(byte[] palStart, int startAdr) {
@@ -189,26 +197,26 @@ namespace SplitEditor {
 			}
 		}
 
-		private bool InitDatas() {
-			bool Ret = false;
-			// Si sauvegardé avec ConvImgCpc, alors la palette se trouve dans l'image...
-			// CPC OLD, écran standard
-			if (bmpCpc[0x7D0] == 0x3A && bmpCpc[0x7D1] == 0xD0 && bmpCpc[0x7D2] == 0xD7 && bmpCpc[0x7D3] == 0xCD) {
-				nbCol = 80;
-				nbLig = 200;
-				SetPalette(bmpCpc, 0x17D0);
-				Ret = true;
+		private bool InitDatas(int size) {
+			PackModule p = new PackModule();
+			if (size < 0x7CC0) {
+				lgPack = size;
+				bmpCpc.CopyTo(bufPack, 0);
+				p.DepackZX0(1, bufPack, bmpCpc);
 			}
-
 			else
-				// CPC OLD, écran overscan
-				if (bmpCpc[0x611] == 0x21 && bmpCpc[0x612] == 0x47 && bmpCpc[0x613] == 0x08 && bmpCpc[0x614] == 0xCD) {
-					nbCol = maxColsCpc;
-					nbLig = maxLignesCpc;
-					SetPalette(bmpCpc, 0x600);
-					Ret = true;
-				}
-			return (Ret);
+				lgPack = p.PackZX0(bmpCpc, 0x7CC0, bufPack, 0);
+
+			bool ret = false;
+			// Si sauvegardé avec ConvImgCpc, alors la palette se trouve dans l'image...
+			// CPC OLD, écran overscan
+			if (bmpCpc[0x611] == 0x21 && bmpCpc[0x612] == 0x47 && bmpCpc[0x613] == 0x08 && bmpCpc[0x614] == 0xCD) {
+				nbCol = maxColsCpc;
+				nbLig = maxLignesCpc;
+				SetPalette(bmpCpc, 0x600);
+				ret = true;
+			}
+			return (ret);
 		}
 	}
 }

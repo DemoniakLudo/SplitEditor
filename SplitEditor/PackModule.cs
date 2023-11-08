@@ -4,20 +4,21 @@ public partial class PackModule : Form {
 	private const int MAX_OFFSET_ZX0 = 0x7F80;
 	private const int MAX_SCALE = 50;
 	private const int QTY_BLOCKS = 10000;
+	private const int BUFFER_SIZE = 0x10000;
 
+	private ProgressBar progressBar;
 	private Block ghost_root;
 	private Block[] dead_array;
 	private int dead_array_size = 0;
 	private int output_index, bit_index, bit_mask;
 	private bool backtrack;
-	private ProgressBar progressBar;
+	private int input_index;
+	private byte last_byte, bit_value;
 
 	public PackModule() {
 		progressBar = new ProgressBar();
 		SuspendLayout();
-	//	progressBar.Location = new System.Drawing.Point(1, 2);
 		progressBar.Size = new System.Drawing.Size(408, 27);
-//		AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 		ClientSize = new System.Drawing.Size(414, 32);
 		Controls.Add(progressBar);
 		FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -220,6 +221,83 @@ public partial class PackModule : Form {
 		write_interlaced_elias_gammaZX0(256, output_data);
 		Hide();
 		return output_size;
+	}
+
+
+	private byte read_byte(byte[] input_data) {
+		last_byte = input_data[input_index++];
+		return last_byte;
+	}
+
+	private int read_bit(byte[] input_data) {
+		if (backtrack) {
+			backtrack = false;
+			return last_byte & 1;
+		}
+		bit_mask >>= 1;
+		if (bit_mask == 0) {
+			bit_mask = 128;
+			bit_value = read_byte(input_data);
+		}
+		return (bit_value & bit_mask) != 0 ? 1 : 0;
+	}
+
+	private int read_interlaced_elias_gamma(byte[] input_data) {
+		int value = 1;
+		while (read_bit(input_data) == 0) {
+			value = value << 1 | read_bit(input_data);
+		}
+		return value;
+	}
+
+	private void write_byte(byte value, byte[] output_data) {
+		output_data[output_index++] = value;
+	}
+
+	private void write_bytes(int offset, int length, byte[] output_data) {
+		int i;
+		while (length-- > 0) {
+			i = output_index - offset;
+			write_byte(output_data[i >= 0 ? i : BUFFER_SIZE + i], output_data);
+		}
+	}
+
+	public int DepackZX0(int classic_mode, byte[] input_data, byte[] output_data) {
+		int last_offset = 1;
+		int length;
+		int i;
+
+		input_index = 0;
+		output_index = 0;
+		bit_mask = 0;
+		backtrack = false;
+
+	COPY_LITERALS:
+		length = read_interlaced_elias_gamma(input_data);
+		for (i = 0; i < length; i++)
+			write_byte(read_byte(input_data), output_data);
+		if (read_bit(input_data) != 0)
+			goto COPY_FROM_NEW_OFFSET;
+
+		/*COPY_FROM_LAST_OFFSET:*/
+		length = read_interlaced_elias_gamma(input_data);
+		write_bytes(last_offset, length, output_data);
+		if (read_bit(input_data) == 0)
+			goto COPY_LITERALS;
+
+		COPY_FROM_NEW_OFFSET:
+		last_offset = read_interlaced_elias_gamma(input_data);
+		if (last_offset == 256)
+			return output_index;
+
+		last_offset = last_offset * 128 - (read_byte(input_data) >> 1);
+		backtrack = true;
+		length = read_interlaced_elias_gamma(input_data) + 1;
+		write_bytes(last_offset, length, output_data);
+		if (read_bit(input_data) != 0)
+			goto COPY_FROM_NEW_OFFSET;
+		else
+			goto COPY_LITERALS;
 	}
 }
 

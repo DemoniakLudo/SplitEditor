@@ -23,9 +23,9 @@ namespace SplitEditor {
 			wr.WriteLine("	LD	B,#BC");
 			wr.WriteLine("BclCrtc:");
 			wr.WriteLine("	LD	A,(HL)");
+			wr.WriteLine("	INC	HL");
 			wr.WriteLine("	AND	A");
 			wr.WriteLine("	JR	Z,SetPalette");
-			wr.WriteLine("	INC	HL");
 			wr.WriteLine("	OUT	(C),A");
 			wr.WriteLine("	INC	B");
 			wr.WriteLine("	INC	B");
@@ -34,7 +34,6 @@ namespace SplitEditor {
 			wr.WriteLine("	JR	BclCrtc");
 			wr.WriteLine("SetPalette:");
 			wr.WriteLine("	LD	B,#7F");
-			wr.WriteLine("	LD	HL,Palette");
 			wr.WriteLine("BclPalette:");
 			wr.WriteLine("	OUT	(C),A");
 			wr.WriteLine("	INC	B");
@@ -54,20 +53,20 @@ namespace SplitEditor {
 			wr.WriteLine("	OUT	(C),C");
 			wr.WriteLine("	LD	BC,#F6C0");
 			wr.WriteLine("	OUT	(C),C");
-			wr.WriteLine("	XOR	A");
-			wr.WriteLine("	OUT	(C),A");
+			wr.WriteLine("	DB	#ED,#71			; OUT	(C),0");
 			wr.WriteLine("	LD	BC,#F792");
 			wr.WriteLine("	OUT	(C),C");
 			wr.WriteLine("	LD	BC,#F645");
 			wr.WriteLine("	OUT	(C),C");
 			wr.WriteLine("	LD	B,#F4");
-			wr.WriteLine("	IN	A,(c)");
+			wr.WriteLine("	IN	A,(C)");
 			wr.WriteLine("	LD	bc,#F782");
 			wr.WriteLine("	OUT	(C),C");
-			wr.WriteLine("	ld	bc,#F600");
-			wr.WriteLine("	OUT	(C),C");
+			wr.WriteLine("	DEC	B");
+			wr.WriteLine("	DB	#ED,#71			; OUT	(C),0");
 			wr.WriteLine("	INC	A");
 			wr.WriteLine("	JP	NZ,RestoreIrq");
+			wr.WriteLine("	ADD\tHL,BC			; (3 NOPs)");
 			wr.WriteLine("	EI");
 			wr.WriteLine("	HALT");
 			wr.WriteLine("	DI");
@@ -88,6 +87,11 @@ namespace SplitEditor {
 					wr.WriteLine("	LD	B,#7F");
 
 				nbNops -= ((bc * 7) + (crashBC ? 2 : 4));
+			}
+			if (nbNops > 11 && nbNops < 17) {
+				wr.WriteLine("	EX	(SP),HL			; Attendre 6 NOPs");
+				wr.WriteLine("	EX	(SP),HL			; Attendre 6 NOPs");
+				nbNops -= 12;
 			}
 			if (nbNops > 7 && nbNops < 1024) {
 				int b = (nbNops - (crashBC ? 1 : 3)) >> 2;
@@ -233,8 +237,10 @@ namespace SplitEditor {
 			wr.WriteLine("	RET");
 			GenereDZX0(wr);
 			wr.WriteLine("");
+			wr.WriteLine("	List");
+			wr.WriteLine("");
 			wr.WriteLine("Overscan:");
-			wr.WriteLine("	DB	1,48,2,50,3,#8E,6,34,7,35,12,13,13,0,0,0,0");
+			wr.WriteLine("	DB	1,48,2,50,3,#8E,6,34,7,35,12,13,13,0,0");
 			wr.WriteLine("Palette:");
 			wr.Write("	DB	");
 			for (int i = 0; i < 16; i++) {
@@ -247,12 +253,11 @@ namespace SplitEditor {
 		}
 
 		static public void CreeAsm(StreamWriter wr, BitmapCpc bmp) {
-			int lgPack = new PackModule().PackZX0(bmp.bmpCpc, 0x7CC0, bufPack, 0);
-			int org = 0x9000 - lgPack;
+			int org = 0x8400 -bmp.lgPack;
 			wr.WriteLine("	ORG	#" + org.ToString("X4"));
 			wr.WriteLine("	Nolist");
 			wr.WriteLine("ImageCmp:");
-			GenereDatas(wr, bufPack, lgPack, 16);
+			GenereDatas(wr, bmp.bufPack,bmp.lgPack, 16);
 			WriteDebFile(wr, 32 + BitmapCpc.retardMin);
 			int nbLigneVide = 0;
 			int tpsImage = 3;
@@ -356,7 +361,6 @@ namespace SplitEditor {
 				tpsImage -= ((nbLigneVide * 64) + reste);
 
 			GenereRetard(wr, (17439 - tpsImage) << 3);
-			wr.WriteLine("	List");
 			WriteEndFile(wr, bmp.Palette);
 		}
 	}
