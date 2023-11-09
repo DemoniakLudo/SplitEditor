@@ -154,7 +154,7 @@ namespace SplitEditor {
 							break;
 
 						case 2:
-							for (int i = 8; i-- > 0;) {
+							for (int i = 8; i-- > 0; ) {
 								bmp.SetPixel(xBitmap, y, GetPalCPC(Palette[x, y >> 1, (octet >> i) & 1]));
 								bmp.SetPixel(xBitmap++, y + 1, GetPalCPC(Palette[x, y >> 1, (octet >> i) & 1]));
 							}
@@ -182,8 +182,11 @@ namespace SplitEditor {
 
 		public void Repack() {
 			PackModule p = new PackModule();
-			for (int i = 0x600; i < 0x7FF; i++)
+			for (int i = 0x600; i < 0x800; i++)
 				bmpCpc[i] = bmpCpc[i + 0x800] = bmpCpc[i + 0x1000] = bmpCpc[i + 0x1800] = bmpCpc[i + 0x2000] = bmpCpc[i + 0x2800] = bmpCpc[i + 0x3000] = 0;
+
+			for (int i = 0x44C0; i < 0x4600; i++)
+				bmpCpc[i] = bmpCpc[i + 0x800] = bmpCpc[i + 0x1000] = bmpCpc[i + 0x1800] = bmpCpc[i + 0x2000] = bmpCpc[i + 0x2800] = bmpCpc[i + 0x3000] =  bmpCpc[i + 0x3800] =0;
 
 			lgPack = p.PackZX0(bmpCpc, 0x7CC0, bufPack, 0);
 		}

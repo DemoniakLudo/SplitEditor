@@ -100,6 +100,7 @@
 			this.pictureBox.TabIndex = 0;
 			this.pictureBox.TabStop = false;
 			this.pictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseClick);
+			this.pictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
 			this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
 			// 
 			// label1
@@ -464,6 +465,7 @@
 			this.modeCpc.Name = "modeCpc";
 			this.modeCpc.Size = new System.Drawing.Size(53, 20);
 			this.modeCpc.TabIndex = 13;
+			this.modeCpc.Visible = false;
 			this.modeCpc.ValueChanged += new System.EventHandler(this.modeCpc_ValueChanged);
 			// 
 			// chkChangeMode
@@ -689,7 +691,7 @@
 			this.lblInfo.AutoSize = true;
 			this.lblInfo.Location = new System.Drawing.Point(357, 633);
 			this.lblInfo.Name = "lblInfo";
-			this.lblInfo.Size = new System.Drawing.Size(16, 13);
+			this.lblInfo.Size = new System.Drawing.Size(15, 13);
 			this.lblInfo.TabIndex = 13;
 			this.lblInfo.Text = "...";
 			// 
@@ -745,9 +747,9 @@
 			// 
 			// pictureZoom
 			// 
-			this.pictureZoom.Location = new System.Drawing.Point(360, 723);
+			this.pictureZoom.Location = new System.Drawing.Point(360, 715);
 			this.pictureZoom.Name = "pictureZoom";
-			this.pictureZoom.Size = new System.Drawing.Size(768, 112);
+			this.pictureZoom.Size = new System.Drawing.Size(768, 128);
 			this.pictureZoom.TabIndex = 20;
 			this.pictureZoom.TabStop = false;
 			// 

@@ -72,6 +72,8 @@ namespace SplitEditor {
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
 			lblColor5.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
+			chkChangeMode.Checked = curLigneSplit.changeMode;
+			modeCpc.Value = curLigneSplit.newMode;
 			doRender = true;
 			if (forceRender) {
 				UpdatePalette();
@@ -157,6 +159,10 @@ namespace SplitEditor {
 			lblInfo.Text = "Position X:" + xReel.ToString("000") + ", Y:" + yReel.ToString("000");
 		}
 
+		private void pictureBox_MouseLeave(object sender, EventArgs e) {
+			lblInfo.Text="...";
+		}
+
 		private void bpSave_Click(object sender, EventArgs e) {
 			SaveFileDialog dlg = new SaveFileDialog { Filter = "Fichiers SplitEditor (*.xml)|*.xml" };
 			DialogResult result = dlg.ShowDialog();
@@ -202,6 +208,7 @@ namespace SplitEditor {
 		}
 
 		private void chkChangeMode_CheckedChanged(object sender, EventArgs e) {
+			modeCpc.Visible = chkChangeMode.Checked;
 			curLigneSplit.changeMode = chkChangeMode.Checked;
 		}
 
@@ -370,12 +377,17 @@ namespace SplitEditor {
 			SaveFileDialog dlg = new SaveFileDialog { Filter = "Image compactées (*.cmp)|*.cmp" };
 			DialogResult result = dlg.ShowDialog();
 			if (result == DialogResult.OK) {
+				string fileName = dlg.FileName;
 				Enabled = false;
-				//
+				CpcAmsdos entete;
+				entete = CpcSystem.CreeEntete(fileName, 0x200, (short)bitmapCpc.lgPack, 0);
+				BinaryWriter fp = new BinaryWriter(new FileStream(fileName, FileMode.Create));
+				fp.Write(CpcSystem.AmsdosToByte(entete));
+				fp.Write(bitmapCpc.bufPack, 0, bitmapCpc.lgPack);
+				fp.Close();
 				Enabled = true;
 			}
 		}
-
 
 		private void bpGenAsm_Click(object sender, EventArgs e) {
 			SaveFileDialog dlg = new SaveFileDialog { Filter = "Source assembleur (*.asm)|*.asm" };
@@ -404,5 +416,6 @@ namespace SplitEditor {
 		private void hScrollZoom_Scroll(object sender, ScrollEventArgs e) {
 			Render();
 		}
+
 	}
 }
