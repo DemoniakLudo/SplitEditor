@@ -64,7 +64,6 @@
 			this.bpSave = new System.Windows.Forms.Button();
 			this.label14 = new System.Windows.Forms.Label();
 			this.retard = new System.Windows.Forms.NumericUpDown();
-			this.bpApplique = new System.Windows.Forms.Button();
 			this.label15 = new System.Windows.Forms.Label();
 			this.bpImportImage = new System.Windows.Forms.Button();
 			this.lblInfo = new System.Windows.Forms.Label();
@@ -657,16 +656,6 @@
             0});
 			this.retard.ValueChanged += new System.EventHandler(this.retard_ValueChanged);
 			// 
-			// bpApplique
-			// 
-			this.bpApplique.Location = new System.Drawing.Point(224, 9);
-			this.bpApplique.Name = "bpApplique";
-			this.bpApplique.Size = new System.Drawing.Size(102, 23);
-			this.bpApplique.TabIndex = 10;
-			this.bpApplique.Text = "Appliquer Splits";
-			this.bpApplique.UseVisualStyleBackColor = true;
-			this.bpApplique.Click += new System.EventHandler(this.bpApplique_Click);
-			// 
 			// label15
 			// 
 			this.label15.AutoSize = true;
@@ -691,7 +680,7 @@
 			this.lblInfo.AutoSize = true;
 			this.lblInfo.Location = new System.Drawing.Point(357, 633);
 			this.lblInfo.Name = "lblInfo";
-			this.lblInfo.Size = new System.Drawing.Size(15, 13);
+			this.lblInfo.Size = new System.Drawing.Size(16, 13);
 			this.lblInfo.TabIndex = 13;
 			this.lblInfo.Text = "...";
 			// 
@@ -799,7 +788,6 @@
 			this.Controls.Add(this.lblInfo);
 			this.Controls.Add(this.bpImportImage);
 			this.Controls.Add(this.label15);
-			this.Controls.Add(this.bpApplique);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.bpSave);
 			this.Controls.Add(this.bpLoad);
@@ -873,7 +861,6 @@
 		private System.Windows.Forms.Button bpSave;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.NumericUpDown retard;
-		private System.Windows.Forms.Button bpApplique;
 		private System.Windows.Forms.CheckBox chkChangeMode;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown modeCpc;

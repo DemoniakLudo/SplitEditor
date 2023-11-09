@@ -93,6 +93,11 @@ namespace SplitEditor {
 				wr.WriteLine("	EX	(SP),HL			; Attendre 6 NOPs");
 				nbNops -= 12;
 			}
+			if (nbNops > 8 && nbNops < 17) {
+				wr.WriteLine("	PUSH	IX			; Attendre 5 NOPs");
+				wr.WriteLine("	POP	IX			; Attendre 4 NOPs");
+				nbNops -= 9;
+			}
 			if (nbNops > 7 && nbNops < 1024) {
 				int b = (nbNops - (crashBC ? 1 : 3)) >> 2;
 				int delai = ((b << 2) + (crashBC ? 1 : 3));
@@ -173,30 +178,6 @@ namespace SplitEditor {
 			sw.WriteLine("	jr	dzx0s_elias_loop");
 		}
 
-		static public void GenereInitOld(StreamWriter sw) {
-			sw.WriteLine("	LD	HL,Palette");
-			sw.WriteLine("	LD	B,#7F");
-			sw.WriteLine("	XOR	A");
-			sw.WriteLine("SetPal:");
-			sw.WriteLine("	OUT	(C),A");
-			sw.WriteLine("	INC	B");
-			sw.WriteLine("	OUTI");
-			sw.WriteLine("	INC	A");
-			sw.WriteLine("	CP	18");
-			sw.WriteLine("	JR	C,SetPal");
-		}
-
-		static public void GenerePalette(StreamWriter sw, BitmapCpc bmp) {
-			sw.WriteLine("Palette:");
-			string line = "\tDB\t";
-			for (int i = 0; i < 17; i++) {
-				int k = bmp.Palette[0, 0, i];
-				line += "#" + ((int)CpcVGA[k < 27 ? k : 0]).ToString("X2") + ",";
-			}
-			line += "#8D";
-			sw.WriteLine(line);
-		}
-
 		static public void GenereDatas(StreamWriter sw, byte[] tabByte, int length, int nbOctetsLigne, int ligneSepa = 0, string labelSepa = null) {
 			string line = "\tDB\t";
 			int nbOctets = 0, nbLigne = 0, indiceLabel = 0;
@@ -253,16 +234,16 @@ namespace SplitEditor {
 		}
 
 		static public void CreeAsm(StreamWriter wr, BitmapCpc bmp) {
-			int org = 0x8400 -bmp.lgPack;
+			int org = 0x8400 - bmp.lgPack;
 			wr.WriteLine("	ORG	#" + org.ToString("X4"));
 			wr.WriteLine("	Nolist");
 			wr.WriteLine("ImageCmp:");
-			GenereDatas(wr, bmp.bufPack,bmp.lgPack, 16);
+			GenereDatas(wr, bmp.bufPack, bmp.lgPack, 16);
 			WriteDebFile(wr, 32 + BitmapCpc.retardMin);
 			int nbLigneVide = 0;
 			int tpsImage = 3;
 			int reste = 0;
-			int oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldc6 = 0, oldPen = 0;
+			int oldc1 = 0, oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldPen = 0;
 			for (int y = 0; y < 272; y++) {
 				LigneSplit lSpl = bmp.splitEcran.LignesSplit[y];
 				if (lSpl.ListeSplit[0].enable) {
@@ -282,25 +263,25 @@ namespace SplitEditor {
 						wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
 						oldPen = lSpl.numPen;
 					}
-					int c1 = CpcVGA[lSpl.ListeSplit[0].couleur];
-					wr.WriteLine("	LD	C,#" + c1.ToString("X2") + "			; (2 NOPs)");
-					int c2 = CpcVGA[lSpl.ListeSplit[1].couleur];
-					int c3 = CpcVGA[lSpl.ListeSplit[2].couleur];
-					if (c2 != oldc2 || c3 != oldc3)
-						wr.WriteLine("	LD	DE,#" + c2.ToString("X2") + c3.ToString("X2") + "		; (3 NOPs)");
+					int c0 = CpcVGA[lSpl.ListeSplit[0].couleur];
+					wr.WriteLine("	LD	C,#" + c0.ToString("X2") + "			; (2 NOPs)");
+					int c1 = CpcVGA[lSpl.ListeSplit[1].couleur];
+					int c2 = CpcVGA[lSpl.ListeSplit[2].couleur];
+					if ((c1 != oldc1 || c2 != oldc2) && (lSpl.ListeSplit[1].enable || lSpl.ListeSplit[2].enable))
+						wr.WriteLine("	LD	DE,#" + c1.ToString("X2") + c2.ToString("X2") + "		; (3 NOPs)");
 					else
 						retSameCol += 24;
 
-					int c4 = CpcVGA[lSpl.ListeSplit[3].couleur];
-					int c5 = CpcVGA[lSpl.ListeSplit[4].couleur];
-					if (c4 != oldc4 || c5 != oldc5)
-						wr.WriteLine("	LD	HL,#" + c4.ToString("X2") + c5.ToString("X2") + "		; (3 NOPs)");
+					int c3 = CpcVGA[lSpl.ListeSplit[3].couleur];
+					int c4 = CpcVGA[lSpl.ListeSplit[4].couleur];
+					if ((c3 != oldc3 || c4 != oldc4) && (lSpl.ListeSplit[3].enable || lSpl.ListeSplit[4].enable))
+						wr.WriteLine("	LD	HL,#" + c3.ToString("X2") + c4.ToString("X2") + "		; (3 NOPs)");
 					else
 						retSameCol += 24;
 
-					int c6 = CpcVGA[lSpl.ListeSplit[5].couleur];
-					if (c6 != oldc6)
-						wr.WriteLine("	LD	A,#" + c6.ToString("X2") + "			; (2 NOPs)");
+					int c5 = CpcVGA[lSpl.ListeSplit[5].couleur];
+					if (c5 != oldc5 && lSpl.ListeSplit[5].enable)
+						wr.WriteLine("	LD	A,#" + c5.ToString("X2") + "			; (2 NOPs)");
 					else
 						retSameCol += 16;
 
@@ -343,11 +324,11 @@ namespace SplitEditor {
 							}
 						}
 					}
+					oldc1 = c1;
 					oldc2 = c2;
 					oldc3 = c3;
 					oldc4 = c4;
 					oldc5 = c5;
-					oldc6 = c6;
 					reste = 64 - tpsLine + (lg >> 3);
 				}
 				else {
