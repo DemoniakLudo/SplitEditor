@@ -1,0 +1,18 @@
+Le principe est de définir des lignes de split sur un image overscan mode 1 (384x272 pixels).
+
+Un bouton permet de lire une image .SCR ou .CMP, issue de ConvImgCpc ou ImpDraw.
+Ensuite, sur chaque ligne, on peut définir :
+- Le split et sa largeur (au minimum 4 nops soit 32 pixels avec la possibilité d'augmenter la largeur, de nops supplémentaire tant que ce qu'il reste de la largeur de la ligne le le permet)
+- la Palette avec un changement de couleur sur UNE encre et trois autres encres communes sur toute la ligne 
+- Il es possible de mettre jusqu'à 6 splits par ligne (en cochant la case devant "split x" pour activer le split).
+
+On peut choisir la ligne en cours d'édition avec la valeur "Ligne " en haut à gauche.
+Il est également possible en cliquant directement dans l'image, de sese positionner directement sur une ligne.
+Dans la zone en bas, on a un zoom sur la ligne en cours et 3 lignes au dessus/en dessous de cette ligne.
+Il est également possible en cliquant sur le bouton à droite "Importer split", d'importer une image contenant les splits dessinés.
+cette image doit obligatoirement être de taille 384x272 et pour un bien au format PNG 24 bits, avec biensur des couleurs proches de la palette du CPC.
+
+Une foit tout bien défini, le bouton "Générer assembleur" génèrera un source content l'image compressée et les splits.
+
+Ah oui un petit truc: sur cpc on ne peut pas commencer un split au début de l'écran (en coordonnée X): il y a forcément un décalage de 4 pixels.
+J'ai choisi de commencer ce décalage vers la droite (les splits commencent donc obligatoirement à X=4), mais on peut le faire dans l'autre sens, soit à X=-4. Ce qui donnerai par exemple un split 0 de taille 28 pixels mini au lieu de 32, mais toujours en augmentant de 8 pixels à la fois.
