@@ -54,6 +54,7 @@ namespace SplitEditor {
 			doRender = false;
 			curLigneSplit = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value);
 			numPen.Value = curLigneSplit.numPen;
+			retard.Value = curLigneSplit.retard;
 			lblColor0.Visible = largSplit0.Visible = chkSplit0.Checked = curLigneSplit.GetSplit(0).enable;
 			largSplit0.Value = curLigneSplit.GetSplit(0).longueur;
 			lblColor0.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(0).couleur].GetColorArgb);
@@ -203,6 +204,7 @@ namespace SplitEditor {
 
 		private void retard_ValueChanged(object sender, EventArgs e) {
 			curLigneSplit.retard = (int)retard.Value;
+			DisplayLigne();
 		}
 
 		private void chkChangeMode_CheckedChanged(object sender, EventArgs e) {
