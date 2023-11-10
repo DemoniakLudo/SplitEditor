@@ -70,10 +70,12 @@ namespace SplitEditor {
 			wr.WriteLine("	EI");
 			wr.WriteLine("	HALT");
 			wr.WriteLine("	DI");
-			GenereRetard(wr, nbPixels + 15612);
+			GenereRetard(wr, nbPixels + 15612, false, true);
 		}
 
-		static private void GenereRetard(StreamWriter wr, int nbPixels, bool crashBC = false) {
+		// Générer des 'NOPS' en fonction du nbre de pixels à passer. Retourne si HL a été modifié (par ADD HL,BC)
+		static private bool GenereRetard(StreamWriter wr, int nbPixels, bool crashBC = false, bool canUseHL = false) {
+			bool ret = false;
 			int nbNops = nbPixels >> 3; // 1 Nop = 8 pixels
 			if (nbNops >= 1024) {
 				int bc = (nbNops - (crashBC ? 2 : 4)) / 7;
@@ -112,12 +114,19 @@ namespace SplitEditor {
 				wr.WriteLine("	ADD	IX,BC			; Attendre 4 NOPs");
 				nbNops -= 4;
 			}
+			if (nbNops >= 3 && canUseHL) {
+				wr.WriteLine("	ADD	HL,BC			; Attendre 3 NOPs");
+				nbNops -= 3;
+				ret = true;
+			}
 			if (nbNops >= 2) {
 				wr.WriteLine("	CP	(HL)			; Attendre 2 NOPs");
 				nbNops -= 2;
 			}
 			for (; nbNops-- > 0;)
 				wr.WriteLine("	NOP				; Attendre 1 NOP");
+
+			return ret;
 		}
 
 		static private void GenereDZX0(StreamWriter sw, string jumpLabel = null) {
@@ -247,17 +256,18 @@ namespace SplitEditor {
 			for (int y = 0; y < 272; y++) {
 				LigneSplit lSpl = bmp.splitEcran.LignesSplit[y];
 				if (lSpl.ListeSplit[0].enable) {
+					bool hlMod = false;
 					int retPrec = 0;
 					if (nbLigneVide > 0 || reste > 0) {
 						retPrec = (reste << 3) + (nbLigneVide * 512);
 						nbLigneVide = 0;
 					}
 					int retard = lSpl.retard - BitmapCpc.retardMin;
-					GenereRetard(wr, retard + retPrec);
+					hlMod |= GenereRetard(wr, retard + retPrec, false, true);
 					int retSameCol = 0;
 					wr.WriteLine("; ---- Ligne " + y.ToString() + " ----");
 					if (reste < 0 && lSpl.numPen == oldPen)
-						GenereRetard(wr, (6 + reste) << 3);
+						hlMod |= GenereRetard(wr, (6 + reste) << 3, false, true);
 					else {
 						wr.WriteLine("	LD	C," + lSpl.numPen.ToString() + "			; (2 NOPs)");
 						wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
@@ -274,8 +284,10 @@ namespace SplitEditor {
 
 					int c3 = CpcVGA[lSpl.ListeSplit[3].couleur];
 					int c4 = CpcVGA[lSpl.ListeSplit[4].couleur];
-					if ((c3 != oldc3 || c4 != oldc4) && (lSpl.ListeSplit[3].enable || lSpl.ListeSplit[4].enable))
+					if (hlMod || ((c3 != oldc3 || c4 != oldc4) && (lSpl.ListeSplit[3].enable || lSpl.ListeSplit[4].enable))) {
 						wr.WriteLine("	LD	HL,#" + c3.ToString("X2") + c4.ToString("X2") + "		; (3 NOPs)");
+						hlMod = false;
+					}
 					else
 						retSameCol += 24;
 
@@ -286,7 +298,7 @@ namespace SplitEditor {
 						retSameCol += 16;
 
 					if (retSameCol > 0)
-						GenereRetard(wr, retSameCol);
+						hlMod |= GenereRetard(wr, retSameCol, false, !lSpl.ListeSplit[3].enable && !lSpl.ListeSplit[4].enable);
 
 					wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
 					int tpsLine = (retard >> 3) + 20;
@@ -300,35 +312,35 @@ namespace SplitEditor {
 								wr.WriteLine("	LD	C,#" + c6.ToString("X2") + "			; (2 NOPs)");
 								lg -= 16;
 							}
-							GenereRetard(wr, lg);
+							hlMod |= GenereRetard(wr, lg, false, !lSpl.ListeSplit[3].enable && !lSpl.ListeSplit[4].enable);
 							lg = 0;
 						}
 						wr.WriteLine("	OUT	(C),D			; (4 NOPs)");
 						tpsLine += 4;
 						if (lSpl.ListeSplit[2].enable) {
 							int lgs = lSpl.ListeSplit[1].longueur - 32;
-							GenereRetard(wr, lgs);
+							hlMod |= GenereRetard(wr, lgs, false, !lSpl.ListeSplit[3].enable && !lSpl.ListeSplit[4].enable);
 							wr.WriteLine("	OUT	(C),E			; (4 NOPs)");
 							tpsLine += 4 + (lgs >> 3);
 							if (lSpl.ListeSplit[3].enable) {
 								lgs = lSpl.ListeSplit[2].longueur - 32;
-								GenereRetard(wr, lgs);
+								hlMod |= GenereRetard(wr, lgs);
 								wr.WriteLine("	OUT	(C),H			; (4 NOPs)");
 								tpsLine += 4 + (lgs >> 3);
 								if (lSpl.ListeSplit[4].enable) {
 									lgs = lSpl.ListeSplit[3].longueur - 32;
-									GenereRetard(wr, lgs);
+									hlMod |= GenereRetard(wr, lgs);
 									wr.WriteLine("	OUT	(C),L			; (4 NOPs)");
 									tpsLine += 4 + (lgs >> 3);
 									if (lSpl.ListeSplit[5].enable) {
 										lgs = lSpl.ListeSplit[4].longueur - 32;
-										GenereRetard(wr, lgs);
+										hlMod |= GenereRetard(wr, lgs);
 										wr.WriteLine("	OUT	(C),A			; (4 NOPs)");
 										tpsLine += 4 + (lgs >> 3);
 									}
 									if (lSpl.ListeSplit[6].enable && c6 != 0) {
 										lgs = lSpl.ListeSplit[5].longueur - 32;
-										GenereRetard(wr, lgs);
+										hlMod |= GenereRetard(wr, lgs);
 										wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
 										tpsLine += 4 + (lgs >> 3);
 									}
@@ -353,7 +365,7 @@ namespace SplitEditor {
 			if (nbLigneVide > 0 || reste > 0)
 				tpsImage -= ((nbLigneVide * 64) + reste);
 
-			GenereRetard(wr, (17439 - tpsImage) << 3);
+			GenereRetard(wr, (17439 - tpsImage) << 3, false, true);
 			WriteEndFile(wr, bmp.Palette);
 		}
 	}
