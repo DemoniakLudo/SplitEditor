@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -20,6 +21,8 @@ namespace SplitEditor {
 
 		public EditSplit() {
 			InitializeComponent();
+			Version version = Assembly.GetExecutingAssembly().GetName().Version;
+			Text = "SplitEditor V " + version.ToString() + " - " + new DateTime(2000, 1, 1).AddDays(version.Build).ToShortDateString();
 			int tx = pictureBox.Width;
 			int ty = pictureBox.Height;
 			bitmapZoom = new DirectBitmap(pictureZoom.Width >> 3, pictureZoom.Height >> 3);
