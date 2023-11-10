@@ -307,6 +307,9 @@ namespace SplitEditor {
 					if (lSpl.ListeSplit[1].enable) {
 						int c6 = 0;
 						if (lg > 0) {
+							if (lSpl.ListeSplit.Count<7)
+								lSpl.ListeSplit.Add(new Split());
+
 							if (lSpl.ListeSplit[6].enable && lg > 16) {
 								c6 = CpcVGA[lSpl.ListeSplit[6].couleur];
 								wr.WriteLine("	LD	C,#" + c6.ToString("X2") + "			; (2 NOPs)");
