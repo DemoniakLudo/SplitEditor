@@ -76,6 +76,11 @@
 			this.hScrollZoom = new System.Windows.Forms.HScrollBar();
 			this.bpSaveImage = new System.Windows.Forms.Button();
 			this.bpRepack = new System.Windows.Forms.Button();
+			this.largSplit6 = new System.Windows.Forms.NumericUpDown();
+			this.chkSplit6 = new System.Windows.Forms.CheckBox();
+			this.label16 = new System.Windows.Forms.Label();
+			this.lblColor6 = new System.Windows.Forms.Label();
+			this.label18 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLigne)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.largSplit0)).BeginInit();
@@ -89,6 +94,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.numPen)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.retard)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureZoom)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.largSplit6)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pictureBox
@@ -416,29 +422,34 @@
 			// 
 			this.grpSplit.Controls.Add(this.modeCpc);
 			this.grpSplit.Controls.Add(this.chkChangeMode);
+			this.grpSplit.Controls.Add(this.label18);
 			this.grpSplit.Controls.Add(this.label8);
 			this.grpSplit.Controls.Add(this.label9);
 			this.grpSplit.Controls.Add(this.label10);
 			this.grpSplit.Controls.Add(this.label11);
 			this.grpSplit.Controls.Add(this.label12);
 			this.grpSplit.Controls.Add(this.label13);
+			this.grpSplit.Controls.Add(this.lblColor6);
 			this.grpSplit.Controls.Add(this.lblColor5);
 			this.grpSplit.Controls.Add(this.lblColor4);
 			this.grpSplit.Controls.Add(this.lblColor3);
 			this.grpSplit.Controls.Add(this.lblColor2);
 			this.grpSplit.Controls.Add(this.lblColor1);
+			this.grpSplit.Controls.Add(this.label16);
 			this.grpSplit.Controls.Add(this.lblColor0);
 			this.grpSplit.Controls.Add(this.label7);
 			this.grpSplit.Controls.Add(this.label6);
 			this.grpSplit.Controls.Add(this.label5);
 			this.grpSplit.Controls.Add(this.label4);
 			this.grpSplit.Controls.Add(this.label3);
+			this.grpSplit.Controls.Add(this.chkSplit6);
 			this.grpSplit.Controls.Add(this.label2);
 			this.grpSplit.Controls.Add(this.chkSplit5);
 			this.grpSplit.Controls.Add(this.chkSplit4);
 			this.grpSplit.Controls.Add(this.chkSplit3);
 			this.grpSplit.Controls.Add(this.chkSplit2);
 			this.grpSplit.Controls.Add(this.chkSplit1);
+			this.grpSplit.Controls.Add(this.largSplit6);
 			this.grpSplit.Controls.Add(this.chkSplit0);
 			this.grpSplit.Controls.Add(this.largSplit5);
 			this.grpSplit.Controls.Add(this.largSplit4);
@@ -448,14 +459,14 @@
 			this.grpSplit.Controls.Add(this.largSplit0);
 			this.grpSplit.Location = new System.Drawing.Point(12, 112);
 			this.grpSplit.Name = "grpSplit";
-			this.grpSplit.Size = new System.Drawing.Size(329, 529);
+			this.grpSplit.Size = new System.Drawing.Size(329, 647);
 			this.grpSplit.TabIndex = 6;
 			this.grpSplit.TabStop = false;
 			this.grpSplit.Text = "Splits";
 			// 
 			// modeCpc
 			// 
-			this.modeCpc.Location = new System.Drawing.Point(256, 485);
+			this.modeCpc.Location = new System.Drawing.Point(256, 539);
 			this.modeCpc.Maximum = new decimal(new int[] {
             2,
             0,
@@ -470,7 +481,7 @@
 			// chkChangeMode
 			// 
 			this.chkChangeMode.AutoSize = true;
-			this.chkChangeMode.Location = new System.Drawing.Point(18, 485);
+			this.chkChangeMode.Location = new System.Drawing.Point(18, 539);
 			this.chkChangeMode.Name = "chkChangeMode";
 			this.chkChangeMode.Size = new System.Drawing.Size(198, 17);
 			this.chkChangeMode.TabIndex = 12;
@@ -715,9 +726,9 @@
 			// 
 			// bpGenAsm
 			// 
-			this.bpGenAsm.Location = new System.Drawing.Point(12, 686);
+			this.bpGenAsm.Location = new System.Drawing.Point(916, 38);
 			this.bpGenAsm.Name = "bpGenAsm";
-			this.bpGenAsm.Size = new System.Drawing.Size(121, 23);
+			this.bpGenAsm.Size = new System.Drawing.Size(135, 23);
 			this.bpGenAsm.TabIndex = 18;
 			this.bpGenAsm.Text = "Générer assembleur";
 			this.bpGenAsm.UseVisualStyleBackColor = true;
@@ -771,6 +782,72 @@
 			this.bpRepack.UseVisualStyleBackColor = true;
 			this.bpRepack.Click += new System.EventHandler(this.bpRepack_Click);
 			// 
+			// largSplit6
+			// 
+			this.largSplit6.Increment = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+			this.largSplit6.Location = new System.Drawing.Point(140, 489);
+			this.largSplit6.Maximum = new decimal(new int[] {
+            384,
+            0,
+            0,
+            0});
+			this.largSplit6.Minimum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			this.largSplit6.Name = "largSplit6";
+			this.largSplit6.Size = new System.Drawing.Size(51, 20);
+			this.largSplit6.TabIndex = 2;
+			this.largSplit6.Value = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			this.largSplit6.ValueChanged += new System.EventHandler(this.largSplit7_ValueChanged);
+			// 
+			// chkSplit6
+			// 
+			this.chkSplit6.AutoSize = true;
+			this.chkSplit6.Location = new System.Drawing.Point(18, 489);
+			this.chkSplit6.Name = "chkSplit6";
+			this.chkSplit6.Size = new System.Drawing.Size(55, 17);
+			this.chkSplit6.TabIndex = 3;
+			this.chkSplit6.Text = "Split 7";
+			this.chkSplit6.UseVisualStyleBackColor = true;
+			this.chkSplit6.CheckedChanged += new System.EventHandler(this.chkSplit7_CheckedChanged);
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(84, 491);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(43, 13);
+			this.label16.TabIndex = 4;
+			this.label16.Text = "Largeur";
+			// 
+			// lblColor6
+			// 
+			this.lblColor6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblColor6.Location = new System.Drawing.Point(279, 474);
+			this.lblColor6.Name = "lblColor6";
+			this.lblColor6.Size = new System.Drawing.Size(35, 35);
+			this.lblColor6.TabIndex = 5;
+			this.lblColor6.Click += new System.EventHandler(this.lblColor7_Click);
+			// 
+			// label18
+			// 
+			this.label18.AutoSize = true;
+			this.label18.Location = new System.Drawing.Point(209, 491);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(43, 13);
+			this.label18.TabIndex = 6;
+			this.label18.Text = "Couleur";
+			// 
 			// EditSplit
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -816,6 +893,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.numPen)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.retard)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureZoom)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.largSplit6)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -875,6 +953,11 @@
 		private System.Windows.Forms.HScrollBar hScrollZoom;
 		private System.Windows.Forms.Button bpSaveImage;
 		private System.Windows.Forms.Button bpRepack;
+		private System.Windows.Forms.Label label18;
+		private System.Windows.Forms.Label lblColor6;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.CheckBox chkSplit6;
+		private System.Windows.Forms.NumericUpDown largSplit6;
 	}
 }
 

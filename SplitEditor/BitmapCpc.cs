@@ -62,7 +62,7 @@ namespace SplitEditor {
 				tabMode[y] = mode;
 				LigneSplit l = new LigneSplit();
 				l.retard = retardMin;
-				for (int j = 0; j < 6; j++)
+				for (int j = 0; j < 7; j++)
 					l.ListeSplit.Add(new Split());
 
 				splitEcran.LignesSplit.Add(l);
@@ -98,7 +98,7 @@ namespace SplitEditor {
 				int xpos = lSpl.retard >> 2;
 				// de x à xpos => faire palette = curPal
 				int x = AppliquePalette(0, y, xpos, curPal);
-				for (int ns = 0; ns < 6; ns++) {
+				for (int ns = 0; ns < 7; ns++) {
 					Split s = lSpl.GetSplit(ns);
 					if (s.enable) {
 						xpos += s.longueur >> 2;

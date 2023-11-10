@@ -35,6 +35,9 @@ namespace SplitEditor {
 		}
 
 		public Split GetSplit(int num) {
+			if (num >= listeSplit.Count)
+				listeSplit.Add(new Split());
+
 			return listeSplit[num];
 		}
 	}

@@ -293,7 +293,13 @@ namespace SplitEditor {
 					int lg = lSpl.ListeSplit[0].longueur - 32;
 					tpsLine += lg >> 3;
 					if (lSpl.ListeSplit[1].enable) {
+						int c6 = 0;
 						if (lg > 0) {
+							if (lSpl.ListeSplit[6].enable && lg > 16) {
+								c6 = CpcVGA[lSpl.ListeSplit[6].couleur];
+								wr.WriteLine("	LD	C,#" + c6.ToString("X2") + "			; (2 NOPs)");
+								lg -= 16;
+							}
 							GenereRetard(wr, lg);
 							lg = 0;
 						}
@@ -318,6 +324,12 @@ namespace SplitEditor {
 										lgs = lSpl.ListeSplit[4].longueur - 32;
 										GenereRetard(wr, lgs);
 										wr.WriteLine("	OUT	(C),A			; (4 NOPs)");
+										tpsLine += 4 + (lgs >> 3);
+									}
+									if (lSpl.ListeSplit[6].enable && c6 != 0) {
+										lgs = lSpl.ListeSplit[5].longueur - 32;
+										GenereRetard(wr, lgs);
+										wr.WriteLine("	OUT	(C),C			; (4 NOPs)");
 										tpsLine += 4 + (lgs >> 3);
 									}
 								}

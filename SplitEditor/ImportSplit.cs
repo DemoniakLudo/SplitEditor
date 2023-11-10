@@ -81,7 +81,10 @@ namespace SplitEditor {
 				RvbColor p = bmpSplit.GetPixelColor(0, y << 1);
 				int curCol = (p.r > SEUIL_LUM_2 ? 6 : p.r > SEUIL_LUM_1 ? 3 : 0) + (p.b > SEUIL_LUM_2 ? 2 : p.b > SEUIL_LUM_1 ? 1 : 0) + (p.v > SEUIL_LUM_2 ? 18 : p.v > SEUIL_LUM_1 ? 9 : 0);
 				LigneSplit lSplit = splitEcran.LignesSplit[y];
-				for (int i = 0; i < 6; i++) {
+				for (int i = 0; i < 7; i++) {
+					if (lSplit.ListeSplit.Count <= i)
+						lSplit.ListeSplit.Add(new Split());
+
 					lSplit.ListeSplit[i].enable = false;
 					lSplit.ListeSplit[i].longueur = 32;
 				}
@@ -100,8 +103,8 @@ namespace SplitEditor {
 							lSplit.ListeSplit[numSplit].enable = true;
 							curCol = indexChoix;
 							longSplit = 0;
-							if (numSplit++ >= 5) {
-								AddErr("Plus de 6 splits trouvés sur la ligne " + y + ", seulement 6 seront pris en compte.");
+							if (numSplit++ >= 6) {
+								AddErr("Plus de 7 splits trouvés sur la ligne " + y + ", seulement 7 seront pris en compte.");
 								x = 96;
 							}
 						}
@@ -112,7 +115,7 @@ namespace SplitEditor {
 						longSplit += 4;
 					}
 				}
-				if (numSplit < 6) {
+				if (numSplit < 7) {
 					bool sameLine = y > 0;
 					for (int k = y - 1; k-- > lastLineWrite; ) {
 						for (int j = 6; --j >= 0; )

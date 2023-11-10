@@ -72,6 +72,9 @@ namespace SplitEditor {
 			lblColor5.Visible = largSplit5.Visible = chkSplit5.Checked = curLigneSplit.GetSplit(5).enable && curLigneSplit.GetSplit(4).enable && curLigneSplit.GetSplit(3).enable && curLigneSplit.GetSplit(2).enable && curLigneSplit.GetSplit(1).enable && curLigneSplit.GetSplit(0).enable;
 			largSplit5.Value = curLigneSplit.GetSplit(5).longueur;
 			lblColor5.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(5).couleur].GetColorArgb);
+			lblColor6.Visible = largSplit6.Visible = chkSplit6.Checked = curLigneSplit.GetSplit(6).enable && curLigneSplit.GetSplit(5).enable && curLigneSplit.GetSplit(4).enable && curLigneSplit.GetSplit(3).enable && curLigneSplit.GetSplit(2).enable && curLigneSplit.GetSplit(1).enable && curLigneSplit.GetSplit(0).enable;
+			largSplit6.Value = curLigneSplit.GetSplit(6).longueur;
+			lblColor6.BackColor = Color.FromArgb(BitmapCpc.RgbCPC[curLigneSplit.GetSplit(6).couleur].GetColorArgb);
 			chkChangeMode.Checked = curLigneSplit.changeMode;
 			modeCpc.Value = curLigneSplit.newMode;
 			doRender = true;
@@ -112,7 +115,7 @@ namespace SplitEditor {
 					int xpos = lSpl.retard >> 2;
 					int x = xpos;
 					XorDrawing.DrawXorLine(g, (Bitmap)pictureBox.Image, x << 3, 0, x << 3, pictureBox.Image.Height);
-					for (int ns = 0; ns < 6; ns++) {
+					for (int ns = 0; ns < 7; ns++) {
 						Split s = lSpl.GetSplit(ns);
 						if (s.enable) {
 							xpos += s.longueur >> 2;
@@ -249,6 +252,12 @@ namespace SplitEditor {
 				ChangeLargeur(5, largSplit5);
 		}
 
+		private void largSplit7_ValueChanged(object sender, EventArgs e) {
+			if (doRender)
+				ChangeLargeur(6, largSplit6);
+		}
+
+
 		private void EnableSplit(int index, CheckBox chk, CheckBox prec) {
 			if (prec == null || prec.Checked) {
 				curLigneSplit.GetSplit(index).enable = chk.Checked;
@@ -286,6 +295,11 @@ namespace SplitEditor {
 		private void chkSplit6_CheckedChanged(object sender, EventArgs e) {
 			if (doRender)
 				EnableSplit(5, chkSplit5, chkSplit4);
+		}
+
+		private void chkSplit7_CheckedChanged(object sender, EventArgs e) {
+			if (doRender)
+				EnableSplit(6, chkSplit6, chkSplit5);
 		}
 
 		private void ChangeColor(int index) {
@@ -328,6 +342,11 @@ namespace SplitEditor {
 			Render();
 		}
 
+		private void lblColor7_Click(object sender, EventArgs e) {
+			ChangeColor(6);
+			Render();
+		}
+
 		private void bpCopieLigne_Click(object sender, EventArgs e) {
 			if ((int)numLigne.Value > 0) {
 				LigneSplit lignePrec = bitmapCpc.splitEcran.GetLigne((int)numLigne.Value - 1);
@@ -335,7 +354,7 @@ namespace SplitEditor {
 				curLigneSplit.retard = lignePrec.retard;
 				curLigneSplit.changeMode = lignePrec.changeMode;
 				curLigneSplit.newMode = lignePrec.newMode;
-				for (int i = 0; i < 6; i++) {
+				for (int i = 0; i < 7; i++) {
 					curLigneSplit.ListeSplit[i].enable = lignePrec.ListeSplit[i].enable;
 					curLigneSplit.ListeSplit[i].couleur = lignePrec.ListeSplit[i].couleur;
 					curLigneSplit.ListeSplit[i].longueur = lignePrec.ListeSplit[i].longueur;
@@ -412,6 +431,7 @@ namespace SplitEditor {
 		private void chkChgt_CheckedChanged(object sender, EventArgs e) {
 			Render();
 		}
+
 
 		private void hScrollZoom_Scroll(object sender, ScrollEventArgs e) {
 			Render();
