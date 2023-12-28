@@ -7,7 +7,7 @@ namespace SplitEditor {
 		static private byte[] bufPack = new byte[0x8000];
 
 		// Code d'initialisation
-		static private void WriteDebFile(StreamWriter wr, int nbPixels) {
+		static private void WriteDebFile(StreamWriter wr) {
 			wr.WriteLine("	RUN $");
 			wr.WriteLine("");
 			wr.WriteLine("	nolist");
@@ -70,7 +70,6 @@ namespace SplitEditor {
 			wr.WriteLine("	EI");
 			wr.WriteLine("	HALT");
 			wr.WriteLine("	DI");
-			GenereRetard(wr, nbPixels + 15612, false, true);
 		}
 
 		// Générer des 'NOPS' en fonction du nbre de pixels à passer. Retourne si HL a été modifié (par ADD HL,BC)
@@ -220,7 +219,7 @@ namespace SplitEditor {
 		static private void WriteEndFile(StreamWriter wr, int[,,] palette) {
 			wr.WriteLine("	JP	Boucle");
 			wr.WriteLine("");
-			wr.WriteLine("	RestoreIrq:");
+			wr.WriteLine("RestoreIrq:");
 			wr.WriteLine("	LD	HL,0");
 			wr.WriteLine("	LD	(#38),HL");
 			wr.WriteLine("	EI");
@@ -243,23 +242,23 @@ namespace SplitEditor {
 		}
 
 		static public void CreeAsm(StreamWriter wr, BitmapCpc bmp) {
-			int org = 0x8400 - bmp.lgPack;
-			wr.WriteLine("	ORG	#" + org.ToString("X4"));
+			int nbLigneVide = 0;
+			int tpsImage = 3;
+			int reste = 0, oldc1 = 0, oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldPen = 0;
+			int oldRetPrec = BitmapCpc.retardMin + 15644;
+			wr.WriteLine("	ORG	#" + (0x8400 - bmp.lgPack).ToString("X4"));
 			wr.WriteLine("	Nolist");
 			wr.WriteLine("ImageCmp:");
 			GenereDatas(wr, bmp.bufPack, bmp.lgPack, 16);
-			WriteDebFile(wr, 32 + BitmapCpc.retardMin);
-			int nbLigneVide = 0;
-			int tpsImage = 3;
-			int reste = 0;
-			int oldc1 = 0, oldc2 = 0, oldc3 = 0, oldc4 = 0, oldc5 = 0, oldPen = 0;
+			WriteDebFile(wr);
 			for (int y = 0; y < 272; y++) {
 				LigneSplit lSpl = bmp.splitEcran.LignesSplit[y];
 				if (lSpl.ListeSplit[0].enable) {
 					bool hlMod = false;
-					int retPrec = 0;
+					int retPrec = oldRetPrec;
+					oldRetPrec = 0;
 					if (nbLigneVide > 0 || reste > 0) {
-						retPrec = (reste << 3) + (nbLigneVide * 512);
+						retPrec += (reste << 3) + (nbLigneVide * 512);
 						nbLigneVide = 0;
 					}
 					int retard = lSpl.retard - BitmapCpc.retardMin;
@@ -307,7 +306,7 @@ namespace SplitEditor {
 					if (lSpl.ListeSplit[1].enable) {
 						int c6 = 0;
 						if (lg > 0) {
-							if (lSpl.ListeSplit.Count<7)
+							if (lSpl.ListeSplit.Count < 7)
 								lSpl.ListeSplit.Add(new Split());
 
 							if (lSpl.ListeSplit[6].enable && lg > 16) {
@@ -365,10 +364,6 @@ namespace SplitEditor {
 
 				tpsImage += 64;
 			}
-			if (nbLigneVide > 0 || reste > 0)
-				tpsImage -= ((nbLigneVide * 64) + reste);
-
-			GenereRetard(wr, (17439 - tpsImage) << 3, false, true);
 			WriteEndFile(wr, bmp.Palette);
 		}
 	}
