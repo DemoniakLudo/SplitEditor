@@ -44,7 +44,7 @@
 			this.bpValide.TabIndex = 2;
 			this.bpValide.Text = "Valider";
 			this.bpValide.UseVisualStyleBackColor = true;
-			this.bpValide.Click += new System.EventHandler(this.bpValide_Click);
+			this.bpValide.Click += new System.EventHandler(this.BpValide_Click);
 			// 
 			// bpAnnule
 			// 
@@ -54,7 +54,7 @@
 			this.bpAnnule.TabIndex = 2;
 			this.bpAnnule.Text = "Annuler";
 			this.bpAnnule.UseVisualStyleBackColor = true;
-			this.bpAnnule.Click += new System.EventHandler(this.bpAnnule_Click);
+			this.bpAnnule.Click += new System.EventHandler(this.BpAnnule_Click);
 			// 
 			// EditColor
 			// 

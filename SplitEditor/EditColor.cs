@@ -67,7 +67,7 @@ namespace SplitEditor {
 
 		private void DblClickColor(object sender, System.EventArgs e) {
 			ClickColor(sender, e);
-			bpValide_Click(sender, e);
+			BpValide_Click(sender, e);
 		}
 
 		private void NewColor() {
@@ -95,12 +95,12 @@ namespace SplitEditor {
 			catch { }
 		}
 
-		private void bpValide_Click(object sender, System.EventArgs e) {
+        private void BpValide_Click(object sender, System.EventArgs e) {
 			isValide = true;
 			Close();
 		}
 
-		private void bpAnnule_Click(object sender, System.EventArgs e) {
+        private void BpAnnule_Click(object sender, System.EventArgs e) {
 			Close();
 		}
 	}

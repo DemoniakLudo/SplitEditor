@@ -48,7 +48,7 @@
 			this.bpLire.TabIndex = 1;
 			this.bpLire.Text = "Lire image";
 			this.bpLire.UseVisualStyleBackColor = true;
-			this.bpLire.Click += new System.EventHandler(this.bpLire_Click);
+			this.bpLire.Click += new System.EventHandler(this.BpLire_Click);
 			// 
 			// label1
 			// 
